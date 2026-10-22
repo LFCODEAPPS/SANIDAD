@@ -128,12 +128,12 @@
 
             <div class="form-group">
                 <label for="nCama">N. de Cama:</label>
-                <input type="text" id="nCama" name="nCama" required placeholder="Ej: Cama 04">
+                <input type="text" id="nCama" name="nCama" required placeholder="Ej: Cama 01">
             </div>
 
             <div class="form-group">
                 <label for="nLote">N. de Lote:</label>
-                <input type="text" id="nLote" name="nLote" required placeholder="Ej: Lote A">
+                <input type="text" id="nLote" name="nLote" required placeholder="Ej: Lote 02">
             </div>
 
             <div class="form-group">
@@ -143,7 +143,7 @@
 
             <div class="form-group">
                 <label for="totalPlantas">Total de Plantas:</label>
-                <input type="number" id="totalPlantas" name="totalPlantas" required placeholder="Ej: 150">
+                <input type="number" id="totalPlantas" name="totalPlantas" required placeholder="Ej: 90">
             </div>
 
             <div class="form-group">
@@ -158,7 +158,7 @@
     </div>
 
     <script>
-        // URL de tu Web App de Google Apps Script proporcionada
+        // URL de tu Web App de Google Apps Script
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
 
         const form = document.getElementById('sanidadForm');
@@ -177,6 +177,14 @@
             const file = archivoInput.files[0];
 
             if (file) {
+                // Validación para evitar que fotos muy pesadas colapsen la petición
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("La foto es demasiado pesada. Por favor, elige una imagen más pequeña.");
+                    loading.style.display = 'none';
+                    submitBtn.disabled = false;
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const base64String = event.target.result;
@@ -184,7 +192,6 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                // Si no se adjuntó foto, se envía vacío
                 enviarDatos("", "", "");
             }
         });
@@ -202,13 +209,16 @@
                 fotoMimeType: fotoMimeType
             };
 
-            // Usamos no-cors o fetch tradicional manejando texto por restricciones de redirección de Google Scripts
+            // Se usa mode: 'no-cors' para permitir la comunicación correcta con Google Apps Script
             fetch(WEB_APP_URL, {
                 method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
                 body: JSON.stringify(datos)
             })
-            .then(response => response.text())
-            .then(result => {
+            .then(() => {
                 loading.style.display = 'none';
                 submitBtn.disabled = false;
                 form.reset();

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Registro de Sanidad</title>
     <style>
         :root {
@@ -19,7 +19,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,7 +28,7 @@
 
         .container {
             background-color: var(--card-bg);
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
@@ -39,11 +39,11 @@
         h2 {
             text-align: center;
             color: var(--primary-color);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
 
         label {
@@ -64,7 +64,6 @@
             font-size: 14px;
             box-sizing: border-box;
             outline: none;
-            transition: border-color 0.2s;
         }
 
         input:focus {
@@ -81,7 +80,6 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
             margin-top: 10px;
         }
 
@@ -93,21 +91,6 @@
             background-color: #9e9e9e;
             cursor: not-allowed;
         }
-
-        #loading {
-            display: none;
-            text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        #message {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -118,85 +101,71 @@
             
             <div class="form-group">
                 <label for="semana">Semana:</label>
-                <input type="text" id="semana" name="semana" required placeholder="Ej: Semana 40">
+                <input type="text" id="semana" required placeholder="Ej: Semana 40">
             </div>
 
             <div class="form-group">
                 <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" required>
+                <input type="date" id="fecha" required>
             </div>
 
             <div class="form-group">
                 <label for="nCama">N. de Cama:</label>
-                <input type="text" id="nCama" name="nCama" required placeholder="Ej: Cama 01">
+                <input type="text" id="nCama" required placeholder="Ej: Cama 01">
             </div>
 
             <div class="form-group">
                 <label for="nLote">N. de Lote:</label>
-                <input type="text" id="nLote" name="nLote" required placeholder="Ej: Lote 02">
+                <input type="text" id="nLote" required placeholder="Ej: Lote 02">
             </div>
 
             <div class="form-group">
                 <label for="plagas">Plagas:</label>
-                <input type="text" id="plagas" name="plagas" placeholder="Ej: Pulgón, Ninguna">
+                <input type="text" id="plagas" placeholder="Ej: Pulgón, Ninguna">
             </div>
 
             <div class="form-group">
                 <label for="totalPlantas">Total de Plantas:</label>
-                <input type="number" id="totalPlantas" name="totalPlantas" required placeholder="Ej: 90">
+                <input type="number" id="totalPlantas" required placeholder="Ej: 90">
             </div>
 
             <div class="form-group">
                 <label for="foto">Foto de Registro:</label>
-                <input type="file" id="foto" name="foto" accept="image/*">
+                <input type="file" id="foto" accept="image/*">
             </div>
 
             <button type="submit" id="submitBtn">Guardar Registro</button>
-            <div id="loading">Enviando datos y subiendo foto... Por favor, espere.</div>
-            <div id="message"></div>
         </form>
     </div>
 
     <script>
-        // URL de tu Web App de Google Apps Script
+        // Tu URL de Google Apps Script actual
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
 
         const form = document.getElementById('sanidadForm');
         const submitBtn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        const messageDiv = document.getElementById('message');
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
+            submitBtn.innerText = "Guardando...";
             submitBtn.disabled = true;
-            loading.style.display = 'block';
-            messageDiv.textContent = '';
 
             const archivoInput = document.getElementById('foto');
             const file = archivoInput.files[0];
 
             if (file) {
-                // Validación para evitar que fotos muy pesadas colapsen la petición
-                if (file.size > 5 * 1024 * 1024) {
-                    alert("La foto es demasiado pesada. Por favor, elige una imagen más pequeña.");
-                    loading.style.display = 'none';
-                    submitBtn.disabled = false;
-                    return;
-                }
-
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    const base64String = event.target.result;
-                    enviarDatos(base64String, file.name, file.type);
+                    enviarDatosAlServidor(event.target.result, file.name, file.type);
                 };
                 reader.readAsDataURL(file);
             } else {
-                enviarDatos("", "", "");
+                enviarDatosAlServidor("", "", "");
             }
         });
 
-        function enviarDatos(fotoBase64, fotoNombre, fotoMimeType) {
+        function enviarDatosAlServidor(fotoBase64, fotoNombre, fotoMimeType) {
             const datos = {
                 semana: document.getElementById('semana').value,
                 fecha: document.getElementById('fecha').value,
@@ -209,28 +178,24 @@
                 fotoMimeType: fotoMimeType
             };
 
-            // Se usa mode: 'no-cors' para permitir la comunicación correcta con Google Apps Script
+            // Estructura exacta de envío idéntica a tu app funcional
             fetch(WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8"
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datos)
             })
             .then(() => {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
+                alert("¡Registro guardado con éxito en Google Sheets!");
                 form.reset();
-                messageDiv.style.color = 'green';
-                messageDiv.textContent = "¡Registro guardado con éxito en Google Sheets!";
+                submitBtn.innerText = "Guardar Registro";
+                submitBtn.disabled = false;
             })
             .catch(error => {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = "Hubo un error al enviar. Inténtalo de nuevo.";
                 console.error('Error:', error);
+                alert("Hubo un error al registrar los datos.");
+                submitBtn.innerText = "Guardar Registro";
+                submitBtn.disabled = false;
             });
         }
     </script>

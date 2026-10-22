@@ -3,66 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Registro de Sanidad</title>
+    <title>Control de Sanidad</title>
     <style>
+        /* Estilos calcados de tu App Médica, adaptados a colores agrícolas */
         :root {
-            --primary-color: #2e7d32;
-            --primary-hover: #1b5e20;
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #cccccc;
+            --primary-color: #2b9348;
+            --primary-bg: #e8f5e9;
+            --text-color: #333;
+            --page-bg: #f4f7f6;
+            --border-color: #ced4da;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--page-bg);
             color: var(--text-color);
             margin: 0;
-            padding: 15px;
+            padding: 10px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
 
         .container {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 800px; /* Ancho similar a tu otra app */
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            margin-top: 20px;
         }
 
-        h2 {
-            text-align: center;
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .header-title {
             color: var(--primary-color);
-            margin-bottom: 20px;
+            margin: 0;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-align: center;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
         }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group.full-width { grid-column: span 2; }
 
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
             font-size: 14px;
+            text-align: left;
         }
 
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="file"] {
+        input, select, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
             box-sizing: border-box;
+            background-color: #fff;
             outline: none;
         }
 
@@ -70,134 +92,162 @@
             border-color: var(--primary-color);
         }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button.action-btn {
+            flex: 1;
             padding: 12px;
-            width: 100%;
+            border: none;
             border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            background-color: var(--primary-color);
+            color: white;
         }
+        
+        button.action-btn:hover { opacity: 0.9; }
 
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:disabled {
-            background-color: #9e9e9e;
-            cursor: not-allowed;
+        /* Adaptación a móviles calcada de tu diseño */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Registro de Sanidad</h2>
-        <form id="sanidadForm">
-            
+<div class="container">
+    <div class="brand-header">
+        <h2 class="header-title">Registro de Sanidad</h2>
+    </div>
+    <div class="subtitle">Sistema de Control de Cultivos y Plagas</div>
+
+    <form id="appointmentForm">
+        <div class="form-grid">
             <div class="form-group">
-                <label for="semana">Semana:</label>
-                <input type="text" id="semana" required placeholder="Ej: Semana 40">
+                <label for="semana">Semana</label>
+                <input type="text" id="semana" placeholder="Ej: Semana 40" required>
             </div>
 
             <div class="form-group">
-                <label for="fecha">Fecha:</label>
+                <label for="fecha">Fecha del Registro</label>
                 <input type="date" id="fecha" required>
             </div>
 
             <div class="form-group">
-                <label for="nCama">N. de Cama:</label>
-                <input type="text" id="nCama" required placeholder="Ej: Cama 01">
+                <label for="nCama">N. de Cama</label>
+                <input type="text" id="nCama" placeholder="Ej: 1" required>
             </div>
 
             <div class="form-group">
-                <label for="nLote">N. de Lote:</label>
-                <input type="text" id="nLote" required placeholder="Ej: Lote 02">
+                <label for="nLote">N. de Lote</label>
+                <input type="text" id="nLote" placeholder="Ej: 2" required>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="plagas">Plagas Encontradas</label>
+                <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
             </div>
 
             <div class="form-group">
-                <label for="plagas">Plagas:</label>
-                <input type="text" id="plagas" placeholder="Ej: Pulgón, Ninguna">
+                <label for="totalPlantas">Total de Plantas</label>
+                <input type="number" id="totalPlantas" placeholder="Ej: 90" required>
             </div>
 
             <div class="form-group">
-                <label for="totalPlantas">Total de Plantas:</label>
-                <input type="number" id="totalPlantas" required placeholder="Ej: 90">
-            </div>
-
-            <div class="form-group">
-                <label for="foto">Foto de Registro:</label>
+                <label for="foto">Foto de Registro</label>
                 <input type="file" id="foto" accept="image/*">
             </div>
+        </div>
 
-            <button type="submit" id="submitBtn">Guardar Registro</button>
-        </form>
-    </div>
+        <div class="actions">
+            <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button>
+        </div>
+    </form>
+</div>
 
-    <script>
-        // Tu URL de Google Apps Script actual
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
+<script>
+    // URL exacta de tu proyecto
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
 
-        const form = document.getElementById('sanidadForm');
-        const submitBtn = document.getElementById('submitBtn');
+    // Poner la fecha actual automáticamente
+    window.onload = function() {
+        const hoy = new Date();
+        const yyyy = hoy.getFullYear();
+        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dd = String(hoy.getDate()).padStart(2, '0');
+        document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+    }
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-            submitBtn.innerText = "Guardando...";
-            submitBtn.disabled = true;
+        const btnSave = document.getElementById('btn-save');
+        btnSave.innerText = "Guardando...";
+        btnSave.disabled = true;
 
-            const archivoInput = document.getElementById('foto');
-            const file = archivoInput.files[0];
+        const archivoInput = document.getElementById('foto');
+        const file = archivoInput.files[0];
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    enviarDatosAlServidor(event.target.result, file.name, file.type);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                enviarDatosAlServidor("", "", "");
-            }
-        });
-
-        function enviarDatosAlServidor(fotoBase64, fotoNombre, fotoMimeType) {
-            const datos = {
-                semana: document.getElementById('semana').value,
-                fecha: document.getElementById('fecha').value,
-                nCama: document.getElementById('nCama').value,
-                nLote: document.getElementById('nLote').value,
-                plagas: document.getElementById('plagas').value,
-                totalPlantas: document.getElementById('totalPlantas').value,
-                fotoBase64: fotoBase64,
-                fotoNombre: fotoNombre,
-                fotoMimeType: fotoMimeType
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                enviarDatos(event.target.result, file.name, file.type);
             };
-
-            // Estructura exacta de envío idéntica a tu app funcional
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            })
-            .then(() => {
-                alert("¡Registro guardado con éxito en Google Sheets!");
-                form.reset();
-                submitBtn.innerText = "Guardar Registro";
-                submitBtn.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Hubo un error al registrar los datos.");
-                submitBtn.innerText = "Guardar Registro";
-                submitBtn.disabled = false;
-            });
+            reader.readAsDataURL(file);
+        } else {
+            enviarDatos("", "", "");
         }
-    </script>
+    });
+
+    // Esta función calcada maneja el fetch tal y como funcionaba en la app médica
+    function enviarDatos(fotoBase64, fotoNombre, fotoMimeType) {
+        const datos = {
+            semana: document.getElementById('semana').value,
+            fecha: document.getElementById('fecha').value,
+            nCama: document.getElementById('nCama').value,
+            nLote: document.getElementById('nLote').value,
+            plagas: document.getElementById('plagas').value,
+            totalPlantas: document.getElementById('totalPlantas').value,
+            fotoBase64: fotoBase64,
+            fotoNombre: fotoNombre,
+            fotoMimeType: fotoMimeType
+        };
+
+        fetch(URL_APPS_SCRIPT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            alert("¡Registro guardado con éxito en Google Sheets!");
+            document.getElementById('appointmentForm').reset();
+            
+            // Restaurar fecha
+            const hoy = new Date();
+            const dd = String(hoy.getDate()).padStart(2, '0');
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            document.getElementById('fecha').value = `${hoy.getFullYear()}-${mm}-${dd}`;
+
+            const btnSave = document.getElementById('btn-save');
+            btnSave.innerText = "Guardar Registro";
+            btnSave.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Hubo un error al registrar los datos.");
+            const btnSave = document.getElementById('btn-save');
+            btnSave.innerText = "Guardar Registro";
+            btnSave.disabled = false;
+        });
+    }
+</script>
+
 </body>
 </html>

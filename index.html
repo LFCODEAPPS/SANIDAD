@@ -170,10 +170,9 @@
 </div>
 
 <script>
-    // URL DE TU SCRIPT DE GOOGLE (Si creaste una "Nueva Implementación", pega la nueva URL aquí)
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
+    // Tu NUEVA URL integrada
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
 
-    // Poner la fecha actual automáticamente
     window.onload = function() {
         const hoy = new Date();
         const yyyy = hoy.getFullYear();
@@ -219,15 +218,13 @@
         fetch(URL_APPS_SCRIPT, {
             method: 'POST',
             mode: 'no-cors',
-            // AQUÍ ESTÁ EL CAMBIO CLAVE PARA QUE GOOGLE NO BLOQUEE LA ENTRADA DE DATOS
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(datos)
         })
         .then(() => {
-            alert("¡Registro enviado! Revisa tu Google Sheets.");
+            alert("¡Registro enviado con éxito! Revisa tu hoja de cálculo.");
             document.getElementById('sanidadForm').reset();
             
-            // Restaurar fecha
             const hoy = new Date();
             const dd = String(hoy.getDate()).padStart(2, '0');
             const mm = String(hoy.getMonth() + 1).padStart(2, '0');

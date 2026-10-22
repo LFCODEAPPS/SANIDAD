@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Bloqueo estricto de zoom en cualquier dispositivo móvil -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>Inka's Berries | Sanidad</title>
     <style>
         :root {
@@ -15,78 +16,96 @@
             --readonly-bg: #e9ecef;
         }
 
-        * { touch-action: manipulation; box-sizing: border-box; }
+        /* Forzar bloqueo de gestos de zoom y doble toque en todas partes */
+        * {
+            touch-action: manipulation;
+            box-sizing: border-box;
+        }
 
-        body {
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--page-bg);
             color: var(--text-color);
-            margin: 0;
-            padding: 10px;
+        }
+
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
             justify-content: center;
         }
 
         .container {
             width: 100%;
             max-width: 480px;
+            height: 100%;
+            max-height: 100vh;
             background: #ffffff;
-            padding: 20px;
-            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 4px 20px rgba(43, 147, 72, 0.12);
             border-top: 5px solid var(--primary-color);
         }
 
-        .view { display: none; }
-        .view.active { display: block; }
+        .view { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+        .view.active { display: flex; }
 
         /* VISTA LOGIN */
-        .login-view { text-align: center; }
+        .login-view { justify-content: center; text-align: center; }
         .company-logo { width: 100px; height: auto; margin-bottom: 8px; object-fit: contain; }
         .company-title { color: var(--primary-color); font-size: 1.3rem; font-weight: 800; text-transform: uppercase; margin: 0 0 20px 0; }
         .login-box { display: flex; flex-direction: column; gap: 14px; text-align: left; }
 
         /* CABECERA FORMULARIO */
-        .brand-header { text-align: center; margin-bottom: 15px; }
-        .header-title { color: var(--primary-dark); margin: 0; text-transform: uppercase; font-size: 1.2rem; font-weight: 800; }
-        .subtitle { text-align: center; color: #555; font-size: 12px; margin-bottom: 15px; }
+        .brand-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; }
+        .header-title { color: var(--primary-dark); margin: 0; text-transform: uppercase; font-size: 1.1rem; font-weight: 800; }
+        .subtitle { text-align: center; color: #555; font-size: 11px; margin-bottom: 8px; }
 
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: var(--primary-dark); }
+        .form-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
 
-        /* Corrección estricta para evitar que los inputs se salgan de pantalla */
+        .form-group { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: var(--primary-dark); }
+
+        /* Solución definitiva para que la fecha y elementos no se salgan de pantalla */
         input, select, textarea {
-            width: 100%;
-            max-width: 100%;
-            padding: 12px;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             background-color: #fff;
             outline: none;
-            box-sizing: border-box;
+            box-sizing: border-box !important;
         }
 
         input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2); }
         input:read-only { background-color: var(--readonly-bg); color: #495057; font-weight: 600; }
 
-        .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .actions { margin-top: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
 
         button.action-btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             background-color: var(--primary-color);
             color: white;
             box-shadow: 0 4px 10px rgba(43, 147, 72, 0.25);
-            transition: background 0.2s;
         }
         button.action-btn:active { transform: scale(0.98); }
         button.action-btn:hover { background-color: var(--primary-dark); }
@@ -95,25 +114,25 @@
 
         .error-msg { color: #dc3545; font-size: 13px; font-weight: bold; text-align: center; display: none; }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
         .user-tag { font-size: 12px; color: var(--primary-dark); font-weight: bold; }
         .logout-btn { background: none; border: none; color: #dc3545; font-size: 12px; font-weight: bold; cursor: pointer; }
 
-        /* MODAL DE CARGA CON PLANTITA DE ARÁNDANO ANIMADA */
+        /* MODAL DE CARGA: PLANTITA DE ARÁNDANO */
         #loadingModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 999;
         }
         .loading-card {
-            background: white; padding: 30px; border-radius: 16px; text-align: center; width: 85%; max-width: 320px;
+            background: white; padding: 25px; border-radius: 16px; text-align: center; width: 85%; max-width: 300px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-top: 6px solid var(--primary-color);
         }
         .blueberry-plant {
-            font-size: 50px; animation: bouncePlant 0.8s infinite alternate ease-in-out; margin-bottom: 10px; display: inline-block;
+            font-size: 45px; animation: bouncePlant 0.8s infinite alternate ease-in-out; margin-bottom: 8px; display: inline-block;
         }
         @keyframes bouncePlant {
             0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-12px) scale(1.1); }
+            100% { transform: translateY(-10px) scale(1.1); }
         }
 
         /* MODAL DE ÉXITO */
@@ -122,43 +141,47 @@
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .success-card {
-            background: white; padding: 30px; border-radius: 16px; text-align: center; width: 85%; max-width: 320px;
+            background: white; padding: 25px; border-radius: 16px; text-align: center; width: 85%; max-width: 300px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleUp 0.3s ease-in-out;
         }
         @keyframes scaleUp {
             from { transform: scale(0.7); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        .success-icon { font-size: 55px; color: var(--primary-color); margin-bottom: 5px; }
+        .success-icon { font-size: 50px; color: var(--primary-color); margin-bottom: 5px; }
 
-        /* ESTILO DEL VISOR (Referencia Estilo Tarjeta) */
+        /* VISOR EN PANTALLA COMPLETA */
+        .viewer-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 120px);
+            padding-right: 2px;
+        }
         .record-card {
             background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px;
-            margin-bottom: 12px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            border-left: 5px solid var(--primary-color); font-size: 13px;
+            margin-bottom: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--primary-color); font-size: 12px;
         }
-        .record-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
-        .record-label { font-weight: bold; color: var(--primary-dark); text-transform: uppercase; font-size: 11px; }
+        .record-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px dashed #eee; padding-bottom: 3px; }
+        .record-label { font-weight: bold; color: var(--primary-dark); text-transform: uppercase; font-size: 10px; }
         .record-val { color: #333; text-align: right; }
     </style>
 </head>
 <body>
 
-<!-- MODAL DE CARGA: PLANTITA DE ARÁNDANO -->
+<!-- MODAL DE CARGA -->
 <div id="loadingModal">
     <div class="loading-card">
         <div class="blueberry-plant">🫐🌿</div>
-        <h3 style="color: var(--primary-dark); margin: 10px 0 5px 0;">Guardando cultivo...</h3>
-        <p style="color: #666; font-size: 13px; margin: 0;">Sincronizando con Google Sheets</p>
+        <h3 style="color: var(--primary-dark); margin: 5px 0; font-size: 16px;">Guardando dato...</h3>
     </div>
 </div>
 
-<!-- MODAL DE ÉXITO ANIMADO -->
+<!-- MODAL DE ÉXITO -->
 <div id="successModal">
     <div class="success-card">
         <div class="success-icon">✅</div>
-        <h3 style="color: var(--primary-dark); margin: 10px 0 5px 0;">¡Guardado Exitoso!</h3>
-        <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Los datos y la foto se registraron correctamente.</p>
+        <h3 style="color: var(--primary-dark); margin: 5px 0 15px 0; font-size: 16px;">Guardado con éxito</h3>
         <button type="button" class="action-btn" onclick="cerrarModalExito()">Aceptar</button>
     </div>
 </div>
@@ -199,45 +222,47 @@
             <div class="subtitle">Registro de Cultivos y Plagas</div>
         </div>
 
-        <form id="sanidadForm">
-            <div class="form-group">
-                <label for="evaluador">Evaluador(a)</label>
-                <input type="text" id="evaluador" readonly>
-            </div>
+        <form id="sanidadForm" style="display:flex; flex-direction:column; height: 100%; overflow:hidden;">
+            <div class="form-scroll-area">
+                <div class="form-group">
+                    <label for="evaluador">Evaluador(a)</label>
+                    <input type="text" id="evaluador" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="semana">Semana</label>
-                <input type="text" id="semana" required>
-            </div>
+                <div class="form-group">
+                    <label for="semana">Semana (Solo número)</label>
+                    <input type="number" inputmode="numeric" id="semana" placeholder="Ej: 43" required>
+                </div>
 
-            <div class="form-group">
-                <label for="fecha">Fecha del Registro</label>
-                <input type="date" id="fecha" required>
-            </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha del Registro</label>
+                    <input type="date" id="fecha" required>
+                </div>
 
-            <div class="form-group">
-                <label for="nCama">N. de Cama</label>
-                <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
-            </div>
+                <div class="form-group">
+                    <label for="nCama">N. de Cama</label>
+                    <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
+                </div>
 
-            <div class="form-group">
-                <label for="nLote">N. de Lote</label>
-                <input type="number" inputmode="numeric" id="nLote" placeholder="Ej: 2" required>
-            </div>
+                <div class="form-group">
+                    <label for="nLote">N. de Lote</label>
+                    <input type="number" inputmode="numeric" id="nLote" placeholder="Ej: 2" required>
+                </div>
 
-            <div class="form-group">
-                <label for="plagas">Plagas Encontradas</label>
-                <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
-            </div>
+                <div class="form-group">
+                    <label for="plagas">Plagas Encontradas</label>
+                    <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
+                </div>
 
-            <div class="form-group">
-                <label for="totalPlantas">Total de Plantas</label>
-                <input type="number" inputmode="numeric" id="totalPlantas" placeholder="Ej: 90" required>
-            </div>
+                <div class="form-group">
+                    <label for="totalPlantas">Total de Plantas</label>
+                    <input type="number" inputmode="numeric" id="totalPlantas" placeholder="Ej: 90" required>
+                </div>
 
-            <div class="form-group">
-                <label for="foto">Foto de Registro</label>
-                <input type="file" id="foto" accept="image/*">
+                <div class="form-group">
+                    <label for="foto">Foto de Registro</label>
+                    <input type="file" id="foto" accept="image/*">
+                </div>
             </div>
 
             <div class="actions">
@@ -247,16 +272,16 @@
         </form>
     </div>
 
-    <!-- VISTA 3: VISOR DE REGISTROS -->
+    <!-- VISTA 3: VISOR EN PANTALLA COMPLETA -->
     <div id="view-viewer" class="view">
         <div class="top-bar">
-            <span class="user-tag" style="font-size: 14px;">📋 Historial de Registros</span>
-            <button type="button" class="logout-btn" onclick="cambiarVista('form')">⬅ Volver al Form</button>
+            <span class="user-tag" style="font-size: 13px;">📋 Historial de Registros</span>
+            <button type="button" class="logout-btn" onclick="cambiarVista('form')">⬅ Volver</button>
         </div>
 
-        <button type="button" class="action-btn" onclick="cargarRegistros()" style="margin-bottom: 15px; padding: 10px; font-size: 14px;">🔄 Actualizar Datos</button>
+        <button type="button" class="action-btn" onclick="cargarRegistros()" style="margin-bottom: 10px; padding: 10px; font-size: 13px; flex-shrink: 0;">🔄 Actualizar Datos</button>
 
-        <div id="viewerContent" style="max-height: 400px; overflow-y: auto;">
+        <div class="viewer-scroll-area" id="viewerContent">
             <p style="text-align: center; color: #666;">Cargando registros...</p>
         </div>
     </div>
@@ -309,7 +334,7 @@
                 
                 const hoy = new Date();
                 document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
-                document.getElementById('semana').value = "Semana " + obtenerNumeroSemana(hoy);
+                document.getElementById('semana').value = obtenerNumeroSemana(hoy);
 
                 document.getElementById('loginUser').value = '';
                 document.getElementById('loginPin').value = '';
@@ -339,7 +364,6 @@
     function cerrarSesion() { cambiarVista('login'); }
     function abrirVisor() { cambiarVista('viewer'); }
 
-    // CARGAR DATOS EN EL VISOR ESTILO TARJETA
     async function cargarRegistros() {
         const contenedor = document.getElementById('viewerContent');
         contenedor.innerHTML = '<p style="text-align: center; color: var(--primary-dark);">Actualizando registros...</p>';
@@ -360,10 +384,10 @@
                 html += `
                     <div class="record-card">
                         <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
-                        <div class="record-row"><span class="record-label">Semana / Fecha</span><span class="record-val">${item.semana} (${item.fecha})</span></div>
+                        <div class="record-row"><span class="record-label">Semana / Fecha</span><span class="record-val">Sem. ${item.semana} (${item.fecha})</span></div>
                         <div class="record-row"><span class="record-label">Cama / Lote</span><span class="record-val">Cama: ${item.nCama} | Lote: ${item.nLote}</span></div>
-                        <div class="record-row"><span class="record-label">Plagas Encontradas</span><span class="record-val">${item.plagas || 'Ninguna'}</span></div>
-                        <div class="record-row"><span class="record-label">Total Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
+                        <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas || 'Ninguna'}</span></div>
+                        <div class="record-row"><span class="record-label">Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
                         <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${fotoLink}</span></div>
                     </div>
                 `;
@@ -375,11 +399,8 @@
         }
     }
 
-    // ENVÍO DE DATOS CON ANIMACIÓN DE PLANTITA Y MODAL DE ÉXITO
     document.getElementById('sanidadForm').addEventListener('submit', function(e) {
         e.preventDefault();
-
-        // Mostrar plantita bailando
         document.getElementById('loadingModal').style.display = 'flex';
 
         const archivoInput = document.getElementById('foto');
@@ -398,7 +419,7 @@
 
     function enviarDatos(fotoBase64, fotoNombre, fotoMimeType) {
         const datos = {
-            semana: document.getElementById('semana').value,
+            semana: "Semana " + document.getElementById('semana').value,
             fecha: document.getElementById('fecha').value,
             evaluador: document.getElementById('evaluador').value,
             nCama: document.getElementById('nCama').value,
@@ -417,11 +438,9 @@
             body: JSON.stringify(datos)
         })
         .then(() => {
-            // Ocultar plantita y mostrar éxito
             document.getElementById('loadingModal').style.display = 'none';
             document.getElementById('successModal').style.display = 'flex';
             
-            // Limpiar campos variables
             document.getElementById('nCama').value = '';
             document.getElementById('nLote').value = '';
             document.getElementById('plagas').value = '';

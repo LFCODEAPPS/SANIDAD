@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Bloqueo total de Zoom por pellizco -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Inka's Berries | Sanidad</title>
     <style>
@@ -11,6 +12,13 @@
             --text-color: #333;
             --page-bg: #f4f7f6;
             --border-color: #ced4da;
+            --readonly-bg: #e9ecef;
+        }
+
+        /* Bloqueo de doble toque y selección para evitar zoom accidental en móviles */
+        * {
+            touch-action: manipulation;
+            box-sizing: border-box;
         }
 
         body {
@@ -18,7 +26,7 @@
             background-color: var(--page-bg);
             color: var(--text-color);
             margin: 0;
-            padding: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,130 +36,135 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             background: #ffffff;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
-        /* Estilos de la Pantalla de Login */
         .login-view {
             text-align: center;
         }
 
         .company-logo {
-            width: 120px;
+            width: 110px;
             height: auto;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             object-fit: contain;
         }
 
         .company-title {
             color: var(--primary-color);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
             text-transform: uppercase;
-            margin: 0 0 25px 0;
-            letter-spacing: 0.5px;
+            margin: 0 0 20px 0;
         }
 
         .login-box {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
             text-align: left;
         }
 
-        /* Vistas de la aplicación */
         .view { display: none; }
         .view.active { display: block; }
 
         .brand-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .header-title {
             color: var(--primary-color);
             margin: 0;
             text-transform: uppercase;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 800;
         }
 
         .subtitle {
             text-align: center;
             color: #6c757d;
-            font-size: 13px;
-            margin-bottom: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .form-group {
+            margin-bottom: 12px;
         }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group.full-width { grid-column: span 2; }
 
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             font-weight: 600;
             font-size: 13px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 11px;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
+            border-radius: 8px;
+            font-size: 15px;
             background-color: #fff;
             outline: none;
         }
 
         input:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.15);
+        }
+
+        /* Estilo para campos bloqueados/grises */
+        input:read-only {
+            background-color: var(--readonly-bg);
+            color: #495057;
+            font-weight: 600;
         }
 
         .actions {
-            display: flex;
-            gap: 15px;
             margin-top: 20px;
         }
 
         button.action-btn {
-            flex: 1;
-            padding: 12px;
+            width: 100%;
+            padding: 14px;
             border: none;
-            border-radius: 6px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             background-color: var(--primary-color);
             color: white;
-            transition: opacity 0.2s;
+            box-shadow: 0 4px 10px rgba(43, 147, 72, 0.2);
         }
         
-        button.action-btn:hover { opacity: 0.9; }
+        button.action-btn:active { transform: scale(0.98); }
 
         .error-msg {
             color: #dc3545;
             font-size: 13px;
             font-weight: bold;
             text-align: center;
-            margin-top: 5px;
             display: none;
         }
 
         .logout-container {
-            text-align: right;
-            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-tag {
+            font-size: 12px;
+            color: #555;
+            font-weight: bold;
         }
 
         .logout-btn {
@@ -161,12 +174,6 @@
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0;
-        }
-
-        @media (max-width: 550px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
         }
     </style>
 </head>
@@ -174,75 +181,79 @@
 
 <div class="container">
 
-    <!-- VISTA 1: INICIO DE SESIÓN -->
+    <!-- VISTA 1: LOGIN -->
     <div id="view-login" class="view active login-view">
         <img src="inkas.png" alt="Inka's Berries Logo" class="company-logo">
         <h1 class="company-title">Inka's Berries | Peru</h1>
         
         <div class="login-box">
-            <div class="form-group" style="margin-bottom: 0;">
+            <div class="form-group">
                 <label for="loginUser">Usuario</label>
-                <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="off">
+                <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="off" autocapitalize="characters">
             </div>
             
-            <div class="form-group" style="margin-bottom: 0;">
+            <div class="form-group">
                 <label for="loginPin">PIN</label>
                 <input type="password" id="loginPin" maxlength="6" placeholder="Ingrese su PIN" autocomplete="off">
             </div>
 
             <div id="login-error" class="error-msg">Usuario o PIN incorrectos.</div>
 
-            <button type="button" class="action-btn" id="btnLogin" onclick="verificarLogin()" style="margin-top: 10px;">Ingresar</button>
+            <button type="button" class="action-btn" id="btnLogin" onclick="verificarLogin()" style="margin-top: 5px;">Ingresar</button>
         </div>
     </div>
 
     <!-- VISTA 2: FORMULARIO DE SANIDAD -->
     <div id="view-form" class="view">
         <div class="logout-container">
+            <span class="user-tag" id="displayUser">Usuario: </span>
             <button type="button" class="logout-btn" onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
         </div>
         
         <div class="brand-header">
             <h2 class="header-title">Control de Sanidad</h2>
+            <div class="subtitle">Registro de Cultivos y Plagas</div>
         </div>
-        <div class="subtitle">Sistema de Control de Cultivos y Plagas</div>
 
         <form id="sanidadForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="semana">Semana</label>
-                    <input type="text" id="semana" placeholder="Ej: Semana 40" required>
-                </div>
+            <div class="form-group">
+                <label for="evaluador">Evaluador(a)</label>
+                <input type="text" id="evaluador" readonly>
+            </div>
 
-                <div class="form-group">
-                    <label for="fecha">Fecha del Registro</label>
-                    <input type="date" id="fecha" required>
-                </div>
+            <div class="form-group">
+                <label for="semana">Semana</label>
+                <input type="text" id="semana" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="nCama">N. de Cama</label>
-                    <input type="text" id="nCama" placeholder="Ej: 1" required>
-                </div>
+            <div class="form-group">
+                <label for="fecha">Fecha del Registro</label>
+                <input type="date" id="fecha" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="nLote">N. de Lote</label>
-                    <input type="text" id="nLote" placeholder="Ej: 2" required>
-                </div>
+            <div class="form-group">
+                <label for="nCama">N. de Cama</label>
+                <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
+            </div>
 
-                <div class="form-group full-width">
-                    <label for="plagas">Plagas Encontradas</label>
-                    <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
-                </div>
+            <div class="form-group">
+                <label for="nLote">N. de Lote</label>
+                <input type="number" inputmode="numeric" id="nLote" placeholder="Ej: 2" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="totalPlantas">Total de Plantas</label>
-                    <input type="number" id="totalPlantas" placeholder="Ej: 90" required>
-                </div>
+            <div class="form-group">
+                <label for="plagas">Plagas Encontradas</label>
+                <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
+            </div>
 
-                <div class="form-group">
-                    <label for="foto">Foto de Registro</label>
-                    <input type="file" id="foto" accept="image/*">
-                </div>
+            <div class="form-group">
+                <label for="totalPlantas">Total de Plantas</label>
+                <input type="number" inputmode="numeric" id="totalPlantas" placeholder="Ej: 90" required>
+            </div>
+
+            <div class="form-group">
+                <label for="foto">Foto de Registro</label>
+                <input type="file" id="foto" accept="image/*">
             </div>
 
             <div class="actions">
@@ -254,17 +265,7 @@
 </div>
 
 <script>
-    // URL de tu Apps Script actual
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
-
-    // Poner la fecha actual por defecto en el formulario al cargar
-    window.onload = function() {
-        const hoy = new Date();
-        const yyyy = hoy.getFullYear();
-        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-        const dd = String(hoy.getDate()).padStart(2, '0');
-        document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
-    }
 
     function cambiarVista(vista) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
@@ -272,7 +273,6 @@
         if (vista === 'form') document.getElementById('view-form').classList.add('active');
     }
 
-    // Función para validar el usuario contra la pestaña USUARIOS del Sheets
     async function verificarLogin() {
         const usuarioInput = document.getElementById('loginUser').value.trim().toUpperCase();
         const pinInput = document.getElementById('loginPin').value.trim();
@@ -301,6 +301,15 @@
             });
 
             if (encontrado) {
+                // Autenticación correcta: configurar datos automáticos del formulario
+                document.getElementById('evaluador').value = usuarioInput;
+                document.getElementById('displayUser').innerText = "Conectado: " + usuarioInput;
+                
+                // Calcular semana actual aproximada y fecha de hoy por defecto
+                const hoy = new Date();
+                document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
+                document.getElementById('semana').value = "Semana " + obtenerNumeroSemana(hoy);
+
                 document.getElementById('loginUser').value = '';
                 document.getElementById('loginPin').value = '';
                 cambiarVista('form');
@@ -318,11 +327,19 @@
         }
     }
 
+    // Función auxiliar para calcular el número de semana del año actual
+    function obtenerNumeroSemana(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+        var inicioAno = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+        var semanaNo = Math.ceil((((d - inicioAno) / 86400000) + 1)/7);
+        return semanaNo;
+    }
+
     function cerrarSesion() {
         cambiarVista('login');
     }
 
-    // Lógica de envío del formulario de Sanidad
     document.getElementById('sanidadForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -348,6 +365,7 @@
         const datos = {
             semana: document.getElementById('semana').value,
             fecha: document.getElementById('fecha').value,
+            evaluador: document.getElementById('evaluador').value,
             nCama: document.getElementById('nCama').value,
             nLote: document.getElementById('nLote').value,
             plagas: document.getElementById('plagas').value,
@@ -364,13 +382,14 @@
             body: JSON.stringify(datos)
         })
         .then(() => {
-            alert("¡Registro enviado con éxito! Revisa tu hoja de cálculo.");
-            document.getElementById('sanidadForm').reset();
+            alert("¡Registro guardado con éxito!");
             
-            const hoy = new Date();
-            const dd = String(hoy.getDate()).padStart(2, '0');
-            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-            document.getElementById('fecha').value = `${hoy.getFullYear()}-${mm}-${dd}`;
+            // Limpiar solo los campos variables (mantiene evaluador, semana y fecha actuales para agilizar registros seguidos)
+            document.getElementById('nCama').value = '';
+            document.getElementById('nLote').value = '';
+            document.getElementById('plagas').value = '';
+            document.getElementById('totalPlantas').value = '';
+            document.getElementById('foto').value = '';
 
             const btnSave = document.getElementById('btn-save');
             btnSave.innerText = "Guardar Registro";

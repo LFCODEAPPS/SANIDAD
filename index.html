@@ -21,7 +21,7 @@
             --readonly-bg: #e9ecef;
         }
 
-        /* Bloqueo global de gestos de zoom y doble toque */
+        /* Bloqueo global de gestos táctiles para evitar zoom */
         * {
             touch-action: manipulation;
             box-sizing: border-box;
@@ -34,6 +34,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--page-bg);
             color: var(--text-color);
+            /* Bloqueo de selección y zoom de texto por gestos */
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -55,18 +58,23 @@
             margin-bottom: 20px;
         }
 
-        .view { display: none; }
-        .view.active { display: block; }
+        /* Control estricto de vistas: solo una se muestra a la vez */
+        .view { display: none !important; }
+        .view.active { display: block !important; }
 
-        /* VISTA LOGIN CON LOGO DESTACADO Y CENTRADO */
+        /* VISTA LOGIN CON LOGO CENTRADO Y DESTACADO */
         .login-view { 
             text-align: center; 
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px 0;
         }
+        .login-view.active {
+            display: flex !important;
+        }
+
         .company-logo { 
             width: 150px; 
             height: auto; 
@@ -98,7 +106,7 @@
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: var(--primary-dark); }
 
-        /* Ajustes estrictos para que ningún input se salga de la pantalla */
+        /* Permitir selección solo dentro de los inputs para poder escribir */
         input, select, textarea {
             width: 100% !important;
             max-width: 100% !important;
@@ -110,6 +118,8 @@
             background-color: #fff;
             outline: none;
             box-sizing: border-box !important;
+            -webkit-user-select: text;
+            user-select: text;
         }
 
         input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2); }
@@ -305,13 +315,21 @@
 <script>
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
 
+    // Forzar bloqueo absoluto de zoom por gestos en JavaScript
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+    document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
+    document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
+
     function cambiarVista(vista) {
-        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-        if (vista === 'login') document.getElementById('view-login').classList.add('active');
-        if (vista === 'form') document.getElementById('view-form').classList.add('active');
-        if (vista === 'viewer') {
-            document.getElementById('view-viewer').classList.add('active');
-            cargarRegistros();
+        document.querySelectorAll('.view').forEach(el => {
+            el.classList.remove('active');
+            el.style.display = 'none';
+        });
+        
+        const objetivo = document.getElementById('view-' + vista);
+        if (objetivo) {
+            objetivo.classList.add('active');
+            objetivo.style.display = (vista === 'login') ? 'flex' : 'block';
         }
     }
 
@@ -471,6 +489,9 @@
     function cerrarModalExito() {
         document.getElementById('successModal').style.display = 'none';
     }
+
+    // Inicializar la vista por defecto al cargar la página
+    cambiarVista('login');
 </script>
 
 </body>

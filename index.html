@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control de Sanidad</title>
+    <title>Inka's Berries | Sanidad</title>
     <style>
         :root {
             --primary-color: #2b9348;
@@ -18,45 +18,74 @@
             background-color: var(--page-bg);
             color: var(--text-color);
             margin: 0;
-            padding: 10px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            justify-content: center;
         }
 
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 500px;
             background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             box-sizing: border-box;
-            margin-top: 20px;
         }
 
-        .brand-header {
+        /* Estilos de la Pantalla de Login */
+        .login-view {
+            text-align: center;
+        }
+
+        .company-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .company-title {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0 0 25px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .login-box {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 5px;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        /* Vistas de la aplicación */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .header-title {
             color: var(--primary-color);
             margin: 0;
             text-transform: uppercase;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
-            text-align: center;
         }
 
         .subtitle {
             text-align: center;
             color: #6c757d;
-            font-size: 14px;
-            margin-bottom: 25px;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
         .form-grid {
@@ -72,13 +101,12 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            font-size: 14px;
-            text-align: left;
+            font-size: 13px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
@@ -94,7 +122,7 @@
         .actions {
             display: flex;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         button.action-btn {
@@ -102,16 +130,41 @@
             padding: 12px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             background-color: var(--primary-color);
             color: white;
+            transition: opacity 0.2s;
         }
         
         button.action-btn:hover { opacity: 0.9; }
 
-        @media (max-width: 600px) {
+        .error-msg {
+            color: #dc3545;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .logout-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        @media (max-width: 550px) {
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full-width { grid-column: span 1; }
         }
@@ -120,59 +173,91 @@
 <body>
 
 <div class="container">
-    <div class="brand-header">
-        <h2 class="header-title">Registro de Sanidad</h2>
+
+    <!-- VISTA 1: INICIO DE SESIÓN -->
+    <div id="view-login" class="view active login-view">
+        <img src="inkas.png" alt="Inka's Berries Logo" class="company-logo">
+        <h1 class="company-title">Inka's Berries | Peru</h1>
+        
+        <div class="login-box">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="loginUser">Usuario</label>
+                <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="off">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="loginPin">PIN</label>
+                <input type="password" id="loginPin" maxlength="6" placeholder="Ingrese su PIN" autocomplete="off">
+            </div>
+
+            <div id="login-error" class="error-msg">Usuario o PIN incorrectos.</div>
+
+            <button type="button" class="action-btn" id="btnLogin" onclick="verificarLogin()" style="margin-top: 10px;">Ingresar</button>
+        </div>
     </div>
-    <div class="subtitle">Sistema de Control de Cultivos y Plagas</div>
 
-    <form id="sanidadForm">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="semana">Semana</label>
-                <input type="text" id="semana" placeholder="Ej: Semana 40" required>
-            </div>
-
-            <div class="form-group">
-                <label for="fecha">Fecha del Registro</label>
-                <input type="date" id="fecha" required>
-            </div>
-
-            <div class="form-group">
-                <label for="nCama">N. de Cama</label>
-                <input type="text" id="nCama" placeholder="Ej: 1" required>
-            </div>
-
-            <div class="form-group">
-                <label for="nLote">N. de Lote</label>
-                <input type="text" id="nLote" placeholder="Ej: 2" required>
-            </div>
-
-            <div class="form-group full-width">
-                <label for="plagas">Plagas Encontradas</label>
-                <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
-            </div>
-
-            <div class="form-group">
-                <label for="totalPlantas">Total de Plantas</label>
-                <input type="number" id="totalPlantas" placeholder="Ej: 90" required>
-            </div>
-
-            <div class="form-group">
-                <label for="foto">Foto de Registro</label>
-                <input type="file" id="foto" accept="image/*">
-            </div>
+    <!-- VISTA 2: FORMULARIO DE SANIDAD -->
+    <div id="view-form" class="view">
+        <div class="logout-container">
+            <button type="button" class="logout-btn" onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
         </div>
-
-        <div class="actions">
-            <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button>
+        
+        <div class="brand-header">
+            <h2 class="header-title">Control de Sanidad</h2>
         </div>
-    </form>
+        <div class="subtitle">Sistema de Control de Cultivos y Plagas</div>
+
+        <form id="sanidadForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="semana">Semana</label>
+                    <input type="text" id="semana" placeholder="Ej: Semana 40" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha">Fecha del Registro</label>
+                    <input type="date" id="fecha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nCama">N. de Cama</label>
+                    <input type="text" id="nCama" placeholder="Ej: 1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nLote">N. de Lote</label>
+                    <input type="text" id="nLote" placeholder="Ej: 2" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="plagas">Plagas Encontradas</label>
+                    <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label for="totalPlantas">Total de Plantas</label>
+                    <input type="number" id="totalPlantas" placeholder="Ej: 90" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="foto">Foto de Registro</label>
+                    <input type="file" id="foto" accept="image/*">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 <script>
-    // Tu NUEVA URL integrada
+    // URL de tu Apps Script actual
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
 
+    // Poner la fecha actual por defecto en el formulario al cargar
     window.onload = function() {
         const hoy = new Date();
         const yyyy = hoy.getFullYear();
@@ -181,6 +266,63 @@
         document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
     }
 
+    function cambiarVista(vista) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        if (vista === 'login') document.getElementById('view-login').classList.add('active');
+        if (vista === 'form') document.getElementById('view-form').classList.add('active');
+    }
+
+    // Función para validar el usuario contra la pestaña USUARIOS del Sheets
+    async function verificarLogin() {
+        const usuarioInput = document.getElementById('loginUser').value.trim().toUpperCase();
+        const pinInput = document.getElementById('loginPin').value.trim();
+        const errorBox = document.getElementById('login-error');
+        const btnLogin = document.getElementById('btnLogin');
+
+        if (!usuarioInput || !pinInput) {
+            errorBox.textContent = "Por favor, ingrese usuario y PIN.";
+            errorBox.style.display = "block";
+            return;
+        }
+
+        btnLogin.innerText = "Verificando...";
+        btnLogin.disabled = true;
+        errorBox.style.display = "none";
+
+        try {
+            const response = await fetch(URL_APPS_SCRIPT + "?action=usuarios");
+            const usuarios = await response.json();
+            
+            let encontrado = false;
+            usuarios.forEach(u => {
+                if (u.usuario.toUpperCase() === usuarioInput && String(u.pin) === String(pinInput)) {
+                    encontrado = true;
+                }
+            });
+
+            if (encontrado) {
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginPin').value = '';
+                cambiarVista('form');
+            } else {
+                errorBox.textContent = "Usuario o PIN incorrectos.";
+                errorBox.style.display = "block";
+            }
+        } catch (error) {
+            console.error('Error al verificar usuarios:', error);
+            errorBox.textContent = "Error de conexión con el servidor.";
+            errorBox.style.display = "block";
+        } finally {
+            btnLogin.innerText = "Ingresar";
+            btnLogin.disabled = false;
+        }
+    }
+
+    function cerrarSesion() {
+        cambiarVista('login');
+    }
+
+    // Lógica de envío del formulario de Sanidad
     document.getElementById('sanidadForm').addEventListener('submit', function(e) {
         e.preventDefault();
 

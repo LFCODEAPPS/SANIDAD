@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control de Sanidad</title>
     <style>
-        /* Estilos calcados de tu App Médica, adaptados a colores agrícolas */
         :root {
             --primary-color: #2b9348;
             --primary-bg: #e8f5e9;
@@ -27,7 +26,7 @@
 
         .container {
             width: 100%;
-            max-width: 800px; /* Ancho similar a tu otra app */
+            max-width: 800px;
             background: #ffffff;
             padding: 20px;
             border-radius: 12px;
@@ -112,7 +111,6 @@
         
         button.action-btn:hover { opacity: 0.9; }
 
-        /* Adaptación a móviles calcada de tu diseño */
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full-width { grid-column: span 1; }
@@ -127,7 +125,7 @@
     </div>
     <div class="subtitle">Sistema de Control de Cultivos y Plagas</div>
 
-    <form id="appointmentForm">
+    <form id="sanidadForm">
         <div class="form-grid">
             <div class="form-group">
                 <label for="semana">Semana</label>
@@ -172,7 +170,7 @@
 </div>
 
 <script>
-    // URL exacta de tu proyecto
+    // URL DE TU SCRIPT DE GOOGLE (Si creaste una "Nueva Implementación", pega la nueva URL aquí)
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbwdqfRnQR0s5chwFngbmDPjpaCkX7UMp40OiZRGI0ChKUrcgzB-GmERAg2LlPudVMoM/exec";
 
     // Poner la fecha actual automáticamente
@@ -184,7 +182,7 @@
         document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
     }
 
-    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+    document.getElementById('sanidadForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const btnSave = document.getElementById('btn-save');
@@ -205,7 +203,6 @@
         }
     });
 
-    // Esta función calcada maneja el fetch tal y como funcionaba en la app médica
     function enviarDatos(fotoBase64, fotoNombre, fotoMimeType) {
         const datos = {
             semana: document.getElementById('semana').value,
@@ -222,12 +219,13 @@
         fetch(URL_APPS_SCRIPT, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            // AQUÍ ESTÁ EL CAMBIO CLAVE PARA QUE GOOGLE NO BLOQUEE LA ENTRADA DE DATOS
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(datos)
         })
         .then(() => {
-            alert("¡Registro guardado con éxito en Google Sheets!");
-            document.getElementById('appointmentForm').reset();
+            alert("¡Registro enviado! Revisa tu Google Sheets.");
+            document.getElementById('sanidadForm').reset();
             
             // Restaurar fecha
             const hoy = new Date();
@@ -241,7 +239,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert("Hubo un error al registrar los datos.");
+            alert("Hubo un error de conexión.");
             const btnSave = document.getElementById('btn-save');
             btnSave.innerText = "Guardar Registro";
             btnSave.disabled = false;

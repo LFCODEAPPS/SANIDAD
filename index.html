@@ -2,24 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Bloqueo total de Zoom por pellizco -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Inka's Berries | Sanidad</title>
     <style>
         :root {
             --primary-color: #2b9348;
+            --primary-dark: #1b5e20;
             --primary-bg: #e8f5e9;
             --text-color: #333;
             --page-bg: #f4f7f6;
-            --border-color: #ced4da;
+            --border-color: #c8e6c9;
             --readonly-bg: #e9ecef;
         }
 
-        /* Bloqueo de doble toque y selección para evitar zoom accidental en móviles */
-        * {
-            touch-action: manipulation;
-            box-sizing: border-box;
-        }
+        * { touch-action: manipulation; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,94 +36,44 @@
             background: #ffffff;
             padding: 20px;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .login-view {
-            text-align: center;
-        }
-
-        .company-logo {
-            width: 110px;
-            height: auto;
-            margin-bottom: 8px;
-            object-fit: contain;
-        }
-
-        .company-title {
-            color: var(--primary-color);
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin: 0 0 20px 0;
-        }
-
-        .login-box {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            text-align: left;
+            box-shadow: 0 4px 20px rgba(43, 147, 72, 0.12);
+            border-top: 5px solid var(--primary-color);
         }
 
         .view { display: none; }
         .view.active { display: block; }
 
-        .brand-header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        /* VISTA LOGIN */
+        .login-view { text-align: center; }
+        .company-logo { width: 100px; height: auto; margin-bottom: 8px; object-fit: contain; }
+        .company-title { color: var(--primary-color); font-size: 1.3rem; font-weight: 800; text-transform: uppercase; margin: 0 0 20px 0; }
+        .login-box { display: flex; flex-direction: column; gap: 14px; text-align: left; }
 
-        .header-title {
-            color: var(--primary-color);
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 1.15rem;
-            font-weight: 800;
-        }
+        /* CABECERA FORMULARIO */
+        .brand-header { text-align: center; margin-bottom: 15px; }
+        .header-title { color: var(--primary-dark); margin: 0; text-transform: uppercase; font-size: 1.2rem; font-weight: 800; }
+        .subtitle { text-align: center; color: #555; font-size: 12px; margin-bottom: 15px; }
 
-        .subtitle {
-            text-align: center;
-            color: #6c757d;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: var(--primary-dark); }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
+        /* Corrección estricta para evitar que los inputs se salgan de pantalla */
         input, select, textarea {
             width: 100%;
+            max-width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 15px;
             background-color: #fff;
             outline: none;
+            box-sizing: border-box;
         }
 
-        input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.15);
-        }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2); }
+        input:read-only { background-color: var(--readonly-bg); color: #495057; font-weight: 600; }
 
-        /* Estilo para campos bloqueados/grises */
-        input:read-only {
-            background-color: var(--readonly-bg);
-            color: #495057;
-            font-weight: 600;
-        }
-
-        .actions {
-            margin-top: 20px;
-        }
+        .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
 
         button.action-btn {
             width: 100%;
@@ -139,45 +85,83 @@
             cursor: pointer;
             background-color: var(--primary-color);
             color: white;
-            box-shadow: 0 4px 10px rgba(43, 147, 72, 0.2);
+            box-shadow: 0 4px 10px rgba(43, 147, 72, 0.25);
+            transition: background 0.2s;
         }
-        
         button.action-btn:active { transform: scale(0.98); }
+        button.action-btn:hover { background-color: var(--primary-dark); }
 
-        .error-msg {
-            color: #dc3545;
-            font-size: 13px;
-            font-weight: bold;
-            text-align: center;
-            display: none;
+        .btn-secondary { background-color: #495057 !important; box-shadow: none !important; }
+
+        .error-msg { color: #dc3545; font-size: 13px; font-weight: bold; text-align: center; display: none; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+        .user-tag { font-size: 12px; color: var(--primary-dark); font-weight: bold; }
+        .logout-btn { background: none; border: none; color: #dc3545; font-size: 12px; font-weight: bold; cursor: pointer; }
+
+        /* MODAL DE CARGA CON PLANTITA DE ARÁNDANO ANIMADA */
+        #loadingModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 999;
+        }
+        .loading-card {
+            background: white; padding: 30px; border-radius: 16px; text-align: center; width: 85%; max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-top: 6px solid var(--primary-color);
+        }
+        .blueberry-plant {
+            font-size: 50px; animation: bouncePlant 0.8s infinite alternate ease-in-out; margin-bottom: 10px; display: inline-block;
+        }
+        @keyframes bouncePlant {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-12px) scale(1.1); }
         }
 
-        .logout-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
+        /* MODAL DE ÉXITO */
+        #successModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
+        .success-card {
+            background: white; padding: 30px; border-radius: 16px; text-align: center; width: 85%; max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleUp 0.3s ease-in-out;
+        }
+        @keyframes scaleUp {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .success-icon { font-size: 55px; color: var(--primary-color); margin-bottom: 5px; }
 
-        .user-tag {
-            font-size: 12px;
-            color: #555;
-            font-weight: bold;
+        /* ESTILO DEL VISOR (Referencia Estilo Tarjeta) */
+        .record-card {
+            background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px;
+            margin-bottom: 12px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--primary-color); font-size: 13px;
         }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #dc3545;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .record-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .record-label { font-weight: bold; color: var(--primary-dark); text-transform: uppercase; font-size: 11px; }
+        .record-val { color: #333; text-align: right; }
     </style>
 </head>
 <body>
+
+<!-- MODAL DE CARGA: PLANTITA DE ARÁNDANO -->
+<div id="loadingModal">
+    <div class="loading-card">
+        <div class="blueberry-plant">🫐🌿</div>
+        <h3 style="color: var(--primary-dark); margin: 10px 0 5px 0;">Guardando cultivo...</h3>
+        <p style="color: #666; font-size: 13px; margin: 0;">Sincronizando con Google Sheets</p>
+    </div>
+</div>
+
+<!-- MODAL DE ÉXITO ANIMADO -->
+<div id="successModal">
+    <div class="success-card">
+        <div class="success-icon">✅</div>
+        <h3 style="color: var(--primary-dark); margin: 10px 0 5px 0;">¡Guardado Exitoso!</h3>
+        <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Los datos y la foto se registraron correctamente.</p>
+        <button type="button" class="action-btn" onclick="cerrarModalExito()">Aceptar</button>
+    </div>
+</div>
 
 <div class="container">
 
@@ -205,8 +189,8 @@
 
     <!-- VISTA 2: FORMULARIO DE SANIDAD -->
     <div id="view-form" class="view">
-        <div class="logout-container">
-            <span class="user-tag" id="displayUser">Usuario: </span>
+        <div class="top-bar">
+            <span class="user-tag" id="displayUser">👤 User</span>
             <button type="button" class="logout-btn" onclick="cerrarSesion()">🔒 Cerrar Sesión</button>
         </div>
         
@@ -258,8 +242,23 @@
 
             <div class="actions">
                 <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button>
+                <button type="button" class="action-btn btn-secondary" onclick="abrirVisor()">📋 Ver Mis Registros</button>
             </div>
         </form>
+    </div>
+
+    <!-- VISTA 3: VISOR DE REGISTROS -->
+    <div id="view-viewer" class="view">
+        <div class="top-bar">
+            <span class="user-tag" style="font-size: 14px;">📋 Historial de Registros</span>
+            <button type="button" class="logout-btn" onclick="cambiarVista('form')">⬅ Volver al Form</button>
+        </div>
+
+        <button type="button" class="action-btn" onclick="cargarRegistros()" style="margin-bottom: 15px; padding: 10px; font-size: 14px;">🔄 Actualizar Datos</button>
+
+        <div id="viewerContent" style="max-height: 400px; overflow-y: auto;">
+            <p style="text-align: center; color: #666;">Cargando registros...</p>
+        </div>
     </div>
 
 </div>
@@ -271,6 +270,10 @@
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         if (vista === 'login') document.getElementById('view-login').classList.add('active');
         if (vista === 'form') document.getElementById('view-form').classList.add('active');
+        if (vista === 'viewer') {
+            document.getElementById('view-viewer').classList.add('active');
+            cargarRegistros();
+        }
     }
 
     async function verificarLogin() {
@@ -301,11 +304,9 @@
             });
 
             if (encontrado) {
-                // Autenticación correcta: configurar datos automáticos del formulario
                 document.getElementById('evaluador').value = usuarioInput;
-                document.getElementById('displayUser').innerText = "Conectado: " + usuarioInput;
+                document.getElementById('displayUser').innerText = "👤 " + usuarioInput;
                 
-                // Calcular semana actual aproximada y fecha de hoy por defecto
                 const hoy = new Date();
                 document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
                 document.getElementById('semana').value = "Semana " + obtenerNumeroSemana(hoy);
@@ -327,7 +328,6 @@
         }
     }
 
-    // Función auxiliar para calcular el número de semana del año actual
     function obtenerNumeroSemana(d) {
         d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
@@ -336,16 +336,51 @@
         return semanaNo;
     }
 
-    function cerrarSesion() {
-        cambiarVista('login');
+    function cerrarSesion() { cambiarVista('login'); }
+    function abrirVisor() { cambiarVista('viewer'); }
+
+    // CARGAR DATOS EN EL VISOR ESTILO TARJETA
+    async function cargarRegistros() {
+        const contenedor = document.getElementById('viewerContent');
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--primary-dark);">Actualizando registros...</p>';
+
+        try {
+            const response = await fetch(URL_APPS_SCRIPT + "?action=registros");
+            const data = await response.json();
+
+            if (!data || data.length === 0) {
+                contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay registros guardados todavía.</p>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(item => {
+                let fotoLink = item.foto.startsWith('http') ? `<a href="${item.foto}" target="_blank" style="color: var(--primary-dark); font-weight:bold;">Ver Foto 📷</a>` : 'Sin foto';
+                
+                html += `
+                    <div class="record-card">
+                        <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
+                        <div class="record-row"><span class="record-label">Semana / Fecha</span><span class="record-val">${item.semana} (${item.fecha})</span></div>
+                        <div class="record-row"><span class="record-label">Cama / Lote</span><span class="record-val">Cama: ${item.nCama} | Lote: ${item.nLote}</span></div>
+                        <div class="record-row"><span class="record-label">Plagas Encontradas</span><span class="record-val">${item.plagas || 'Ninguna'}</span></div>
+                        <div class="record-row"><span class="record-label">Total Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
+                        <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${fotoLink}</span></div>
+                    </div>
+                `;
+            });
+            contenedor.innerHTML = html;
+        } catch (error) {
+            console.error(error);
+            contenedor.innerHTML = '<p style="text-align: center; color: red;">Error al cargar el historial.</p>';
+        }
     }
 
+    // ENVÍO DE DATOS CON ANIMACIÓN DE PLANTITA Y MODAL DE ÉXITO
     document.getElementById('sanidadForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const btnSave = document.getElementById('btn-save');
-        btnSave.innerText = "Guardando...";
-        btnSave.disabled = true;
+        // Mostrar plantita bailando
+        document.getElementById('loadingModal').style.display = 'flex';
 
         const archivoInput = document.getElementById('foto');
         const file = archivoInput.files[0];
@@ -382,26 +417,26 @@
             body: JSON.stringify(datos)
         })
         .then(() => {
-            alert("¡Registro guardado con éxito!");
+            // Ocultar plantita y mostrar éxito
+            document.getElementById('loadingModal').style.display = 'none';
+            document.getElementById('successModal').style.display = 'flex';
             
-            // Limpiar solo los campos variables (mantiene evaluador, semana y fecha actuales para agilizar registros seguidos)
+            // Limpiar campos variables
             document.getElementById('nCama').value = '';
             document.getElementById('nLote').value = '';
             document.getElementById('plagas').value = '';
             document.getElementById('totalPlantas').value = '';
             document.getElementById('foto').value = '';
-
-            const btnSave = document.getElementById('btn-save');
-            btnSave.innerText = "Guardar Registro";
-            btnSave.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
+            document.getElementById('loadingModal').style.display = 'none';
             alert("Hubo un error de conexión.");
-            const btnSave = document.getElementById('btn-save');
-            btnSave.innerText = "Guardar Registro";
-            btnSave.disabled = false;
         });
+    }
+
+    function cerrarModalExito() {
+        document.getElementById('successModal').style.display = 'none';
     }
 </script>
 

@@ -380,10 +380,8 @@
     function cerrarSesion() { cambiarVista('login'); }
     function abrirVisor() { cambiarVista('viewer'); }
 
-    // Función auxiliar para transformar fecha de YYYY-MM-DD a DD-MM-YYYY
     function formatearFechaSimple(fechaStr) {
         if (!fechaStr) return "";
-        // Si viene con hora (ej: 2026-10-22T05:00:00.000Z), cortamos solo la parte de la fecha
         let soloFecha = fechaStr.split('T')[0];
         let partes = soloFecha.split('-');
         if (partes.length === 3) {
@@ -455,7 +453,7 @@
             fecha: document.getElementById('fecha').value,
             evaluador: document.getElementById('evaluador').value,
             tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
-            nCama: document.getElementById('nCama'].value,
+            nCama: document.getElementById('nCama').value,
             nLote: document.getElementById('nLote').value,
             plagas: document.getElementById('plagas').value,
             totalPlantas: document.getElementById('totalPlantas').value,

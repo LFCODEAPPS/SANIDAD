@@ -2,11 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Bloqueo estricto de zoom en dispositivos móviles -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>Inka's Berries | Sanidad</title>
     
-    <!-- Icono para acceso directo en la pantalla de inicio de iOS y Android -->
     <link rel="apple-touch-icon" href="ac.jpg">
     <link rel="icon" type="image/jpeg" href="ac.jpg">
 
@@ -21,84 +19,33 @@
             --readonly-bg: #e9ecef;
         }
 
-        /* Bloqueo global de gestos táctiles para evitar zoom */
-        * {
-            touch-action: manipulation;
-            box-sizing: border-box;
-        }
+        * { touch-action: manipulation; box-sizing: border-box; }
 
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
+            margin: 0; padding: 0; width: 100%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--page-bg);
-            color: var(--text-color);
-            /* Bloqueo de selección y zoom de texto por gestos */
-            -webkit-user-select: none;
-            user-select: none;
+            background-color: var(--page-bg); color: var(--text-color);
+            -webkit-user-select: none; user-select: none;
         }
 
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            min-height: 100vh;
-        }
+        body { display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; }
 
         .container {
-            width: 100%;
-            max-width: 480px;
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(43, 147, 72, 0.12);
-            border-top: 5px solid var(--primary-color);
-            margin-bottom: 20px;
+            width: 100%; max-width: 480px; background: #ffffff; padding: 15px;
+            border-radius: 16px; box-shadow: 0 4px 20px rgba(43, 147, 72, 0.12);
+            border-top: 5px solid var(--primary-color); margin-bottom: 20px;
         }
 
-        /* Control estricto de vistas: solo una se muestra a la vez */
         .view { display: none !important; }
         .view.active { display: block !important; }
 
-        /* VISTA LOGIN CON LOGO CENTRADO Y DESTACADO */
-        .login-view { 
-            text-align: center; 
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 0;
-        }
-        .login-view.active {
-            display: flex !important;
-        }
+        .login-view { text-align: center; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
+        .login-view.active { display: flex !important; }
 
-        .company-logo { 
-            width: 150px; 
-            height: auto; 
-            margin-bottom: 15px; 
-            object-fit: contain; 
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .company-title { 
-            color: var(--primary-color); 
-            font-size: 1.4rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin: 0 0 25px 0; 
-        }
-        .login-box { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 14px; 
-            text-align: left; 
-            width: 100%;
-        }
+        .company-logo { width: 150px; height: auto; margin-bottom: 15px; object-fit: contain; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .company-title { color: var(--primary-color); font-size: 1.4rem; font-weight: 800; text-transform: uppercase; margin: 0 0 25px 0; }
+        .login-box { display: flex; flex-direction: column; gap: 14px; text-align: left; width: 100%; }
 
-        /* CABECERA FORMULARIO INTEGRADO */
         .brand-header { text-align: center; margin-bottom: 12px; }
         .header-title { color: var(--primary-dark); margin: 0; text-transform: uppercase; font-size: 1.15rem; font-weight: 800; }
         .subtitle { text-align: center; color: #555; font-size: 11px; margin-bottom: 10px; }
@@ -106,38 +53,21 @@
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 12px; color: var(--primary-dark); }
 
-        /* Permitir selección solo dentro de los inputs para poder escribir */
         input, select, textarea {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            padding: 11px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            background-color: #fff;
-            outline: none;
-            box-sizing: border-box !important;
-            -webkit-user-select: text;
-            user-select: text;
+            width: 100% !important; max-width: 100% !important; min-width: 0 !important;
+            padding: 11px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 14px; background-color: #fff; outline: none; box-sizing: border-box !important;
+            -webkit-user-select: text; user-select: text;
         }
 
-        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2); }
+        input:focus, select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2); }
         input:read-only { background-color: var(--readonly-bg); color: #495057; font-weight: 600; }
 
         .actions { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
 
         button.action-btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px 10px rgba(43, 147, 72, 0.25);
+            width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold;
+            cursor: pointer; background-color: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(43, 147, 72, 0.25);
         }
         button.action-btn:active { transform: scale(0.98); }
         button.action-btn:hover { background-color: var(--primary-dark); }
@@ -150,39 +80,20 @@
         .user-tag { font-size: 12px; color: var(--primary-dark); font-weight: bold; }
         .logout-btn { background: none; border: none; color: #dc3545; font-size: 12px; font-weight: bold; cursor: pointer; }
 
-        /* MODAL DE CARGA */
-        #loadingModal {
+        /* MODALES */
+        #loadingModal, #successModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 999;
         }
-        .loading-card {
+        .loading-card, .success-card {
             background: white; padding: 25px; border-radius: 16px; text-align: center; width: 85%; max-width: 300px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-top: 6px solid var(--primary-color);
         }
-        .blueberry-plant {
-            font-size: 45px; animation: bouncePlant 0.8s infinite alternate ease-in-out; margin-bottom: 8px; display: inline-block;
-        }
-        @keyframes bouncePlant {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-10px) scale(1.1); }
-        }
-
-        /* MODAL DE ÉXITO */
-        #successModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .success-card {
-            background: white; padding: 25px; border-radius: 16px; text-align: center; width: 85%; max-width: 300px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: scaleUp 0.3s ease-in-out;
-        }
-        @keyframes scaleUp {
-            from { transform: scale(0.7); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        .blueberry-plant { font-size: 45px; animation: bouncePlant 0.8s infinite alternate ease-in-out; margin-bottom: 8px; display: inline-block; }
+        @keyframes bouncePlant { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-10px) scale(1.1); } }
         .success-icon { font-size: 50px; color: var(--primary-color); margin-bottom: 5px; }
 
-        /* ESTILO DEL VISOR EN TARJETAS */
+        /* TARJETAS DE HISTORIAL */
         .record-card {
             background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px;
             margin-bottom: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
@@ -195,7 +106,6 @@
 </head>
 <body>
 
-<!-- MODAL DE CARGA -->
 <div id="loadingModal">
     <div class="loading-card">
         <div class="blueberry-plant">🫐🌿</div>
@@ -203,7 +113,6 @@
     </div>
 </div>
 
-<!-- MODAL DE ÉXITO -->
 <div id="successModal">
     <div class="success-card">
         <div class="success-icon">✅</div>
@@ -255,6 +164,15 @@
             </div>
 
             <div class="form-group">
+                <label for="tipoEvaluacion">Tipo de Evaluación</label>
+                <select id="tipoEvaluacion" onchange="actualizarPlagas()" required>
+                    <option value="" disabled selected>Seleccione tipo...</option>
+                    <option value="ENGORDE">ENGORDE</option>
+                    <option value="ACLIMATACION">ACLIMATACION</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="semana">Semana (Solo número)</label>
                 <input type="number" inputmode="numeric" id="semana" placeholder="Ej: 43" required>
             </div>
@@ -276,7 +194,9 @@
 
             <div class="form-group">
                 <label for="plagas">Plagas Encontradas</label>
-                <input type="text" id="plagas" placeholder="Ej: Ninguna, Pulgón, etc.">
+                <select id="plagas" required>
+                    <option value="" disabled selected>Primero seleccione tipo de evaluación...</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -315,7 +235,9 @@
 <script>
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
 
-    // Forzar bloqueo absoluto de zoom por gestos en JavaScript
+    // Variables globales para almacenar las listas dinámicas de plagas
+    let listasPlagas = { engorde: [], aclimatacion: [] };
+
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
     document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
@@ -331,6 +253,41 @@
             objetivo.classList.add('active');
             objetivo.style.display = (vista === 'login') ? 'flex' : 'block';
         }
+    }
+
+    // Cargar listas de plagas desde Google Sheets al iniciar la app
+    async function cargarListasPlagas() {
+        try {
+            const response = await fetch(URL_APPS_SCRIPT + "?action=listas");
+            const data = await response.json();
+            if (data) {
+                listasPlagas.engorde = data.engorde || [];
+                listasPlagas.aclimatacion = data.aclimatacion || [];
+            }
+        } catch (error) {
+            console.error("Error al cargar plagas:", error);
+        }
+    }
+
+    // Cambiar dinámicamente las opciones del select de plagas según la opción elegida
+    function actualizarPlagas() {
+        const tipo = document.getElementById('tipoEvaluacion').value;
+        const selectPlagas = document.getElementById('plagas');
+        selectPlagas.innerHTML = '<option value="" disabled selected>Seleccione plaga...</option>';
+
+        let plagasDisponibles = [];
+        if (tipo === "ENGORDE") {
+            plagasDisponibles = listasPlagas.engorde;
+        } else if (tipo === "ACLIMATACION") {
+            plagasDisponibles = listasPlagas.aclimatacion;
+        }
+
+        plagasDisponibles.forEach(plaga => {
+            let opt = document.createElement('option');
+            opt.value = plaga;
+            opt.textContent = plaga;
+            selectPlagas.appendChild(opt);
+        });
     }
 
     async function verificarLogin() {
@@ -367,6 +324,9 @@
                 const hoy = new Date();
                 document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
                 document.getElementById('semana').value = obtenerNumeroSemana(hoy);
+
+                // Cargar plagas al iniciar sesión exitosamente
+                await cargarListasPlagas();
 
                 document.getElementById('loginUser').value = '';
                 document.getElementById('loginPin').value = '';
@@ -416,9 +376,10 @@
                 html += `
                     <div class="record-card">
                         <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
-                        <div class="record-row"><span class="record-label">Semana / Fecha</span><span class="record-val">Sem. ${item.semana} (${item.fecha})</span></div>
+                        <div class="record-row"><span class="record-label">Tipo / Sem.</span><span class="record-val">${item.tipoEvaluacion} (Sem. ${item.semana})</span></div>
+                        <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${item.fecha}</span></div>
                         <div class="record-row"><span class="record-label">Cama / Lote</span><span class="record-val">Cama: ${item.nCama} | Lote: ${item.nLote}</span></div>
-                        <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas || 'Ninguna'}</span></div>
+                        <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                         <div class="record-row"><span class="record-label">Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
                         <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${fotoLink}</span></div>
                     </div>
@@ -454,6 +415,7 @@
             semana: document.getElementById('semana').value,
             fecha: document.getElementById('fecha').value,
             evaluador: document.getElementById('evaluador').value,
+            tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
             nCama: document.getElementById('nCama').value,
             nLote: document.getElementById('nLote').value,
             plagas: document.getElementById('plagas').value,
@@ -473,9 +435,10 @@
             document.getElementById('loadingModal').style.display = 'none';
             document.getElementById('successModal').style.display = 'flex';
             
+            document.getElementById('tipoEvaluacion').selectedIndex = 0;
+            document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>';
             document.getElementById('nCama').value = '';
             document.getElementById('nLote').value = '';
-            document.getElementById('plagas').value = '';
             document.getElementById('totalPlantas').value = '';
             document.getElementById('foto').value = '';
         })
@@ -490,7 +453,6 @@
         document.getElementById('successModal').style.display = 'none';
     }
 
-    // Inicializar la vista por defecto al cargar la página
     cambiarVista('login');
 </script>
 

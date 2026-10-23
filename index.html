@@ -235,7 +235,6 @@
 <script>
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
 
-    // Variables globales para almacenar las listas dinámicas de plagas
     let listasPlagas = { engorde: [], aclimatacion: [] };
 
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
@@ -252,10 +251,14 @@
         if (objetivo) {
             objetivo.classList.add('active');
             objetivo.style.display = (vista === 'login') ? 'flex' : 'block';
+            
+            // CORRECCIÓN: Forzar la ejecución inmediata y segura al cambiar a la vista del visor
+            if (vista === 'viewer') {
+                setTimeout(cargarRegistros, 50);
+            }
         }
     }
 
-    // Cargar listas de plagas desde Google Sheets al iniciar la app
     async function cargarListasPlagas() {
         try {
             const response = await fetch(URL_APPS_SCRIPT + "?action=listas");
@@ -269,7 +272,6 @@
         }
     }
 
-    // Cambiar dinámicamente las opciones del select de plagas según la opción elegida
     function actualizarPlagas() {
         const tipo = document.getElementById('tipoEvaluacion').value;
         const selectPlagas = document.getElementById('plagas');
@@ -325,7 +327,6 @@
                 document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
                 document.getElementById('semana').value = obtenerNumeroSemana(hoy);
 
-                // Cargar plagas al iniciar sesión exitosamente
                 await cargarListasPlagas();
 
                 document.getElementById('loginUser').value = '';
@@ -358,7 +359,7 @@
 
     async function cargarRegistros() {
         const contenedor = document.getElementById('viewerContent');
-        contenedor.innerHTML = '<p style="text-align: center; color: var(--primary-dark);">Actualizando registros...</p>';
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--primary-dark);">Cargando registros...</p>';
 
         try {
             const response = await fetch(URL_APPS_SCRIPT + "?action=registros");

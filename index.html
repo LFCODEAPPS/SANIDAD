@@ -100,7 +100,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.15); border-top: 6px solid var(--accent-color);
         }
         
-        /* PLANTA DE ARÁNDANO PURA (SOLO HOJAS / VEGETATIVA) */
         .blueberry-plant { font-size: 55px; animation: swayPlant 1.2s infinite alternate ease-in-out; margin-bottom: 10px; display: inline-block; }
         @keyframes swayPlant {
             0% { transform: rotate(-5deg) scale(1); }
@@ -122,7 +121,6 @@
 </head>
 <body>
 
-<!-- MODAL DE CARGA: SOLO LA PLANTA VEGETATIVA -->
 <div id="loadingModal">
     <div class="loading-card">
         <div class="blueberry-plant">🌱🌿</div>
@@ -130,7 +128,6 @@
     </div>
 </div>
 
-<!-- MODAL DE ÉXITO -->
 <div id="successModal">
     <div class="success-card">
         <div class="success-icon">✅</div>
@@ -383,6 +380,18 @@
     function cerrarSesion() { cambiarVista('login'); }
     function abrirVisor() { cambiarVista('viewer'); }
 
+    // Función auxiliar para transformar fecha de YYYY-MM-DD a DD-MM-YYYY
+    function formatearFechaSimple(fechaStr) {
+        if (!fechaStr) return "";
+        // Si viene con hora (ej: 2026-10-22T05:00:00.000Z), cortamos solo la parte de la fecha
+        let soloFecha = fechaStr.split('T')[0];
+        let partes = soloFecha.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}-${partes[1]}-${partes[0]}`; // DD-MM-YYYY
+        }
+        return fechaStr;
+    }
+
     async function cargarRegistros() {
         const contenedor = document.getElementById('viewerContent');
         contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</p>';
@@ -400,12 +409,13 @@
             data.forEach(item => {
                 let fotoLink = item.foto.startsWith('http') ? `<a href="${item.foto}" target="_blank" style="color: var(--accent-color); font-weight:700; text-decoration: none;">Ver Foto 📷</a>` : 'Sin foto';
                 let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : '';
+                let fechaBonita = formatearFechaSimple(item.fecha);
                 
                 html += `
                     <div class="record-card">
                         <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
                         <div class="record-row"><span class="record-label">Tipo / Sem.</span><span class="record-val">${item.tipoEvaluacion} (Sem. ${item.semana})</span></div>
-                        <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${item.fecha}</span></div>
+                        <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${fechaBonita}</span></div>
                         <div class="record-row"><span class="record-label">Cama / Lote</span><span class="record-val">Cama: ${item.nCama} | Lote: ${item.nLote}</span></div>
                         <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                         <div class="record-row"><span class="record-label">Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
@@ -445,7 +455,7 @@
             fecha: document.getElementById('fecha').value,
             evaluador: document.getElementById('evaluador').value,
             tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
-            nCama: document.getElementById('nCama').value,
+            nCama: document.getElementById('nCama'].value,
             nLote: document.getElementById('nLote').value,
             plagas: document.getElementById('plagas').value,
             totalPlantas: document.getElementById('totalPlantas').value,

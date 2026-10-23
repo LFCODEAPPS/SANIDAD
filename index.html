@@ -252,7 +252,6 @@
             objetivo.classList.add('active');
             objetivo.style.display = (vista === 'login') ? 'flex' : 'block';
             
-            // CORRECCIÓN: Forzar la ejecución inmediata y segura al cambiar a la vista del visor
             if (vista === 'viewer') {
                 setTimeout(cargarRegistros, 50);
             }
@@ -323,8 +322,13 @@
                 document.getElementById('evaluador').value = usuarioInput;
                 document.getElementById('displayUser').innerText = "👤 " + usuarioInput;
                 
+                // Corrección de la fecha local exacta (evita desfase de zona horaria)
                 const hoy = new Date();
-                document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
+                const anio = hoy.getFullYear();
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                document.getElementById('fecha').value = `${anio}-${mes}-${dia}`;
+                
                 document.getElementById('semana').value = obtenerNumeroSemana(hoy);
 
                 await cargarListasPlagas();

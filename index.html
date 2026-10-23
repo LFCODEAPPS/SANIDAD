@@ -41,7 +41,6 @@
         .view { display: none !important; }
         .view.active { display: block !important; }
 
-        /* VISTA LOGIN PREMIUM */
         .login-view { text-align: center; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
         .login-view.active { display: flex !important; }
 
@@ -49,7 +48,6 @@
         .company-title { color: var(--primary-color); font-size: 1.35rem; font-weight: 800; text-transform: uppercase; margin: 0 0 25px 0; letter-spacing: 0.5px; }
         .login-box { display: flex; flex-direction: column; gap: 16px; text-align: left; width: 100%; }
 
-        /* CABECERA FORMULARIO */
         .brand-header { text-align: center; margin-bottom: 16px; }
         .header-title { color: var(--primary-color); margin: 0; text-transform: uppercase; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; }
         .subtitle { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 4px; }
@@ -90,7 +88,6 @@
         .user-tag { font-size: 12px; color: var(--primary-color); font-weight: 700; background: var(--primary-bg); padding: 4px 10px; border-radius: 20px; }
         .logout-btn { background: none; border: none; color: #d32f2f; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-        /* MODALES PROFESIONALES */
         #loadingModal, #successModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 999;
@@ -108,7 +105,6 @@
         
         .success-icon { font-size: 60px; color: var(--accent-color); margin-bottom: 5px; }
 
-        /* TARJETAS DE HISTORIAL PREMIÚM */
         .record-card {
             background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px;
             margin-bottom: 12px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
@@ -202,9 +198,22 @@
                 <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
             </div>
 
+            <!-- NUEVO CAMPO: N. DE BLOQUE CON NÚMEROS ROMANOS (I al X) -->
             <div class="form-group">
-                <label for="nLote">N. de Lote</label>
-                <input type="number" inputmode="numeric" id="nLote" placeholder="Ej: 2" required>
+                <label for="nBloque">N. de Bloque</label>
+                <select id="nBloque" required>
+                    <option value="" disabled selected>Seleccione bloque...</option>
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
+                    <option value="VI">VI</option>
+                    <option value="VII">VII</option>
+                    <option value="VIII">VIII</option>
+                    <option value="IX">IX</option>
+                    <option value="X">X</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -414,7 +423,7 @@
                         <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
                         <div class="record-row"><span class="record-label">Tipo / Sem.</span><span class="record-val">${item.tipoEvaluacion} (Sem. ${item.semana})</span></div>
                         <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${fechaBonita}</span></div>
-                        <div class="record-row"><span class="record-label">Cama / Lote</span><span class="record-val">Cama: ${item.nCama} | Lote: ${item.nLote}</span></div>
+                        <div class="record-row"><span class="record-label">Cama / Bloque</span><span class="record-val">Cama: ${item.nCama} | Bloque: ${item.nBloque}</span></div>
                         <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                         <div class="record-row"><span class="record-label">Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
                         ${obsText}
@@ -454,7 +463,7 @@
             evaluador: document.getElementById('evaluador').value,
             tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
             nCama: document.getElementById('nCama').value,
-            nLote: document.getElementById('nLote').value,
+            nBloque: document.getElementById('nBloque').value, // N. de Bloque en romano
             plagas: document.getElementById('plagas').value,
             totalPlantas: document.getElementById('totalPlantas').value,
             observaciones: document.getElementById('observaciones').value,
@@ -474,9 +483,9 @@
             document.getElementById('successModal').style.display = 'flex';
             
             document.getElementById('tipoEvaluacion').selectedIndex = 0;
+            document.getElementById('nBloque').selectedIndex = 0;
             document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>';
             document.getElementById('nCama').value = '';
-            document.getElementById('nLote').value = '';
             document.getElementById('totalPlantas').value = '';
             document.getElementById('observaciones').value = '';
             document.getElementById('foto').value = '';

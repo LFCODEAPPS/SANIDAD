@@ -251,9 +251,10 @@
                 <textarea id="observaciones" placeholder="Detalles o comentarios adicionales..."></textarea>
             </div>
 
+            <!-- SECCIÓN MODIFICADA: Se agrega capture="environment" para forzar el uso de la cámara trasera en Android e iOS -->
             <div class="form-group">
                 <label for="foto">Evidencia Fotográfica</label>
-                <input type="file" id="foto" accept="image/*">
+                <input type="file" id="foto" accept="image/*" capture="environment">
             </div>
 
             <div class="actions">
@@ -392,7 +393,7 @@
                 if (ok) {
                     await dbDelete(rec.id);
                 } else {
-                    break; // mantiene el orden y no insiste si hay falla
+                    break;
                 }
             }
         } catch (error) {
@@ -451,7 +452,7 @@
     }
 
     /* =====================================================
-       LISTAS DE PLAGAS (con copia local para modo offline)
+       LISTAS DE PLAGAS
        ===================================================== */
     async function cargarListasPlagas() {
         try {
@@ -495,7 +496,7 @@
     }
 
     /* =====================================================
-       LOGIN (con acceso offline para dispositivos ya usados)
+       LOGIN
        ===================================================== */
     async function hashCredenciales(usuario, pin) {
         const texto = usuario + ':' + pin;
@@ -579,7 +580,6 @@
             }
         } catch (error) {
             console.error('Error al verificar usuarios:', error);
-            // Sin conexión: permite entrar si este usuario ya inició sesión antes en este teléfono
             if (await validarCredencialLocal(usuarioInput, pinInput)) {
                 await entrarAlFormulario(usuarioInput);
             } else {
@@ -614,7 +614,7 @@
     }
 
     /* =====================================================
-       HISTORIAL (muestra primero los pendientes de envío)
+       HISTORIAL
        ===================================================== */
     async function htmlPendientes() {
         let lista = [];
@@ -710,7 +710,6 @@
         loading.style.display = 'flex';
 
         try {
-            // 1) Foto comprimida (si hay)
             let fotoBase64 = "", fotoNombre = "", fotoMimeType = "";
             const file = document.getElementById('foto').files[0];
             if (file) {
@@ -725,7 +724,6 @@
                 }
             }
 
-            // 2) Registro con ID único (el servidor lo usa para evitar duplicados)
             const rec = {
                 id: generarId(),
                 creadoEn: Date.now(),
@@ -743,11 +741,9 @@
                 fotoMimeType: fotoMimeType
             };
 
-            // 3) Primero se guarda en el teléfono (nunca se pierde el dato)
             let guardadoLocal = false;
             try { await dbPut(rec); guardadoLocal = true; } catch (errDb) { console.error(errDb); }
 
-            // 4) Se intenta enviar; solo se confirma si el servidor responde EXITO
             let enviado = false;
             if (navigator.onLine) enviado = await enviarAlServidor(rec);
 
@@ -757,7 +753,7 @@
                 if (guardadoLocal) { try { await dbDelete(rec.id); } catch (x) {} }
                 mostrarExito('Guardado con éxito', '✅');
                 limpiarFormularioTrasGuardar();
-                sincronizarPendientes(); // por si había registros antiguos en cola
+                sincronizarPendientes();
             } else if (guardadoLocal) {
                 mostrarExito('Sin conexión estable: guardado en el teléfono. Se enviará automáticamente.', '📴');
                 limpiarFormularioTrasGuardar();

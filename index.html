@@ -250,7 +250,13 @@
                 <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
             </div>
 
-            <!-- 8. PLAGAS -->
+            <!-- 8. CANTIDAD -->
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" inputmode="numeric" id="cantidad" placeholder="Ej: 5" required>
+            </div>
+
+            <!-- 9. PLAGAS -->
             <div class="form-group">
                 <label for="plagas">Plagas</label>
                 <select id="plagas" required>
@@ -258,22 +264,16 @@
                 </select>
             </div>
 
-            <!-- 9. N DE MUESTRA -->
+            <!-- 10. N DE MUESTRA -->
             <div class="form-group">
                 <label for="nMuestra">N. de Muestra</label>
                 <input type="number" inputmode="numeric" id="nMuestra" placeholder="Ej: 10" required>
             </div>
 
-            <!-- 10. OBSERVACIONES -->
+            <!-- 11. OBSERVACIONES -->
             <div class="form-group">
                 <label for="observaciones">Observaciones</label>
                 <textarea id="observaciones" placeholder="Detalles o comentarios adicionales..."></textarea>
-            </div>
-
-            <!-- 11. TOMAR FOTO (Abre directamente la cámara con capture="environment") -->
-            <div class="form-group">
-                <label for="foto">Tomar Foto</label>
-                <input type="file" id="foto" accept="image/*" capture="environment">
             </div>
 
             <div class="actions">
@@ -300,7 +300,7 @@
 </div>
 
 <script>
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec";
+    const URL_APPS_SCRIPT = "TU_URL_DE_APPS_SCRIPT_AQUI";
 
     let listasPlagas = { engorde: [], aclimatacion: [] };
 
@@ -340,32 +340,6 @@
     function generarId() {
         if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
         return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
-    }
-
-    function comprimirImagen(file, maxLado = 1280, calidad = 0.7) {
-        return new Promise((resolve, reject) => {
-            const url = URL.createObjectURL(file);
-            const img = new Image();
-            img.onload = () => {
-                URL.revokeObjectURL(url);
-                const escala = Math.min(1, maxLado / Math.max(img.width, img.height));
-                const w = Math.round(img.width * escala);
-                const h = Math.round(img.height * escala);
-                const canvas = document.createElement('canvas');
-                canvas.width = w;
-                canvas.height = h;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL('image/jpeg', calidad));
-            };
-            img.onerror = () => {
-                URL.revokeObjectURL(url);
-                reject(new Error('No se pudo leer la imagen'));
-            };
-            img.src = url;
-        });
     }
 
     async function enviarAlServidor(rec) {
@@ -630,10 +604,10 @@
                     <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
                     <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
                     <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
+                    <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                     <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                     <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
                     ${obsText}
-                    <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${item.fotoBase64 ? 'Foto adjunta 📷' : 'Sin foto'}</span></div>
                 </div>
             `;
         });
@@ -657,7 +631,6 @@
 
             let html = pendientesHtml;
             (data || []).forEach(item => {
-                let fotoLink = item.foto && item.foto.startsWith('http') ? `<a href="${item.foto}" target="_blank" style="color: var(--accent-color); font-weight:700; text-decoration: none;">Ver Foto 📷</a>` : 'Sin foto';
                 let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : '';
                 let fechaBonita = formatearFechaSimple(item.fecha);
                 
@@ -669,10 +642,10 @@
                         <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
                         <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
                         <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
+                        <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                         <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                         <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
                         ${obsText}
-                        <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${fotoLink}</span></div>
                     </div>
                 `;
             });
@@ -696,9 +669,9 @@
         document.getElementById('nBloque').selectedIndex = 0;
         document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>';
         document.getElementById('nCama').value = '';
+        document.getElementById('cantidad').value = '';
         document.getElementById('nMuestra').value = '';
         document.getElementById('observaciones').value = '';
-        document.getElementById('foto').value = '';
     }
 
     document.getElementById('sanidadForm').addEventListener('submit', async function(e) {
@@ -710,20 +683,6 @@
         loading.style.display = 'flex';
 
         try {
-            let fotoBase64 = "", fotoNombre = "", fotoMimeType = "";
-            const file = document.getElementById('foto').files[0];
-            if (file) {
-                try {
-                    fotoBase64 = await comprimirImagen(file);
-                    fotoNombre = file.name.replace(/\.[^.]+$/, '') + '.jpg';
-                    fotoMimeType = 'image/jpeg';
-                } catch (errImg) {
-                    loading.style.display = 'none';
-                    alert("No se pudo procesar la foto. Intente con otra imagen.");
-                    return;
-                }
-            }
-
             const rec = {
                 id: generarId(),
                 creadoEn: Date.now(),
@@ -734,12 +693,10 @@
                 tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
                 nBloque: document.getElementById('nBloque').value,
                 nCama: document.getElementById('nCama').value,
+                cantidad: document.getElementById('cantidad').value,
                 plagas: document.getElementById('plagas').value,
                 nMuestra: document.getElementById('nMuestra').value,
-                observaciones: document.getElementById('observaciones').value,
-                fotoBase64: fotoBase64,
-                fotoNombre: fotoNombre,
-                fotoMimeType: fotoMimeType
+                observaciones: document.getElementById('observaciones').value
             };
 
             let guardadoLocal = false;

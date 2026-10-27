@@ -250,18 +250,18 @@
                 <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
             </div>
 
-            <!-- 8. CANTIDAD -->
-            <div class="form-group">
-                <label for="cantidad">Cantidad</label>
-                <input type="number" inputmode="numeric" id="cantidad" placeholder="Ej: 5" required>
-            </div>
-
-            <!-- 9. PLAGAS -->
+            <!-- 8. PLAGAS -->
             <div class="form-group">
                 <label for="plagas">Plagas</label>
                 <select id="plagas" required>
                     <option value="" disabled selected>Primero seleccione tipo de evaluación...</option>
                 </select>
+            </div>
+
+            <!-- 9. CANTIDAD -->
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" inputmode="numeric" id="cantidad" placeholder="Ej: 5" required>
             </div>
 
             <!-- 10. N DE MUESTRA -->
@@ -604,8 +604,8 @@
                     <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
                     <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
                     <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
-                    <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                     <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
+                    <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                     <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
                     ${obsText}
                 </div>
@@ -642,8 +642,8 @@
                         <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
                         <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
                         <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
-                        <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                         <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
+                        <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
                         <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
                         ${obsText}
                     </div>
@@ -693,8 +693,8 @@
                 tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
                 nBloque: document.getElementById('nBloque').value,
                 nCama: document.getElementById('nCama').value,
-                cantidad: document.getElementById('cantidad').value,
                 plagas: document.getElementById('plagas').value,
+                cantidad: document.getElementById('cantidad').value,
                 nMuestra: document.getElementById('nMuestra').value,
                 observaciones: document.getElementById('observaciones').value
             };

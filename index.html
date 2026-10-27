@@ -205,7 +205,7 @@
                 <input type="date" id="fecha" required>
             </div>
 
-            <!-- 4. VARIEDAD (NUEVO CAMPO CON LISTA DESPLEGABLE) -->
+            <!-- 4. VARIEDAD -->
             <div class="form-group">
                 <label for="variedad">Variedad</label>
                 <select id="variedad" required>
@@ -264,22 +264,16 @@
                 <input type="number" inputmode="numeric" id="nMuestra" placeholder="Ej: 10" required>
             </div>
 
-            <!-- 10. TOTAL DE PLANTAS -->
-            <div class="form-group">
-                <label for="totalPlantas">Total de Plantas</label>
-                <input type="number" inputmode="numeric" id="totalPlantas" placeholder="Ej: 90" required>
-            </div>
-
-            <!-- 11. OBSERVACIONES -->
+            <!-- 10. OBSERVACIONES -->
             <div class="form-group">
                 <label for="observaciones">Observaciones</label>
                 <textarea id="observaciones" placeholder="Detalles o comentarios adicionales..."></textarea>
             </div>
 
-            <!-- 12. FOTO (EVIDENCIA FOTOGRÁFICA) -->
+            <!-- 11. TOMAR FOTO (Abre directamente la cámara con capture="environment") -->
             <div class="form-group">
-                <label for="foto">Evidencia Fotográfica (Foto)</label>
-                <input type="file" id="foto" accept="image/*">
+                <label for="foto">Tomar Foto</label>
+                <input type="file" id="foto" accept="image/*" capture="environment">
             </div>
 
             <div class="actions">
@@ -638,7 +632,6 @@
                     <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
                     <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                     <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
-                    <div class="record-row"><span class="record-label">Total Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
                     ${obsText}
                     <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${item.fotoBase64 ? 'Foto adjunta 📷' : 'Sin foto'}</span></div>
                 </div>
@@ -678,7 +671,6 @@
                         <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
                         <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
                         <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
-                        <div class="record-row"><span class="record-label">Total Plantas</span><span class="record-val">${item.totalPlantas}</span></div>
                         ${obsText}
                         <div class="record-row" style="border:none; margin-bottom:0;"><span class="record-label">Evidencia</span><span class="record-val">${fotoLink}</span></div>
                     </div>
@@ -705,7 +697,6 @@
         document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>';
         document.getElementById('nCama').value = '';
         document.getElementById('nMuestra').value = '';
-        document.getElementById('totalPlantas').value = '';
         document.getElementById('observaciones').value = '';
         document.getElementById('foto').value = '';
     }
@@ -745,7 +736,6 @@
                 nCama: document.getElementById('nCama').value,
                 plagas: document.getElementById('plagas').value,
                 nMuestra: document.getElementById('nMuestra').value,
-                totalPlantas: document.getElementById('totalPlantas').value,
                 observaciones: document.getElementById('observaciones').value,
                 fotoBase64: fotoBase64,
                 fotoNombre: fotoNombre,

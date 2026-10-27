@@ -1,740 +1,740 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>Inka's Berries | Sanidad</title>
-    
-    <link rel="apple-touch-icon" href="ac.jpg">
-    <link rel="icon" type="image/jpeg" href="ac.jpg">
-
-    <style>
-        :root {
-            --primary-color: #1b5e20;
-            --primary-light: #2e7d32;
-            --accent-color: #4caf50;
-            --surface-bg: #ffffff;
-            --page-bg: #f8f9fa;
-            --text-main: #2c3e50;
-            --text-muted: #7f8c8d;
-            --border-color: #e0e0e0;
-            --readonly-bg: #f1f3f5;
-        }
-
-        * { touch-action: manipulation; box-sizing: border-box; }
-
-        html, body {
-            margin: 0; padding: 0; width: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--page-bg); color: var(--text-main);
-            -webkit-user-select: none; user-select: none;
-        }
-
-        body { display: flex; flex-direction: column; align-items: center; padding: 12px; min-height: 100vh; }
-
-        .container {
-            width: 100%; max-width: 460px; background: var(--surface-bg); padding: 20px;
-            border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border-top: 6px solid var(--primary-color); margin-bottom: 20px;
-        }
-
-        .view { display: none !important; }
-        .view.active { display: block !important; }
-
-        .login-view { text-align: center; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
-        .login-view.active { display: flex !important; }
-
-        .company-logo { width: 130px; height: auto; margin-bottom: 15px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
-        .company-title { color: var(--primary-color); font-size: 1.35rem; font-weight: 800; text-transform: uppercase; margin: 0 0 25px 0; letter-spacing: 0.5px; }
-        .login-box { display: flex; flex-direction: column; gap: 16px; text-align: left; width: 100%; }
-
-        .brand-header { text-align: center; margin-bottom: 16px; }
-        .header-title { color: var(--primary-color); margin: 0; text-transform: uppercase; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; }
-        .subtitle { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 4px; }
-
-        .form-group { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 11.5px; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.3px; }
-
-        input, select, textarea {
-            width: 100% !important; max-width: 100% !important; min-width: 0 !important;
-            padding: 12px; border: 1px solid var(--border-color); border-radius: 10px;
-            font-size: 14px; background-color: #fafafa; outline: none; box-sizing: border-box !important;
-            transition: all 0.2s ease;
-            -webkit-user-select: text; user-select: text;
-        }
-
-        textarea { resize: vertical; min-height: 80px; }
-
-        input:focus, select:focus, textarea:focus { 
-            border-color: var(--accent-color); background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1); 
-        }
-        input:read-only { background-color: var(--readonly-bg); color: #555; font-weight: 600; border-color: #dcdcdc; }
-
-        .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-
-        button.action-btn {
-            width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700;
-            cursor: pointer; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white;
-            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.2); transition: transform 0.1s ease;
-        }
-        button.action-btn:active { transform: scale(0.98); }
-        button.action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .btn-secondary { background: #6c757d !important; box-shadow: none !important; }
-
-        .error-msg { color: #d32f2f; font-size: 12.5px; font-weight: 700; text-align: center; display: none; background: #ffebee; padding: 8px; border-radius: 8px; }
-
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-        .user-tag { font-size: 12px; color: var(--primary-color); font-weight: 700; background: var(--primary-bg); padding: 4px 10px; border-radius: 20px; }
-        .logout-btn { background: none; border: none; color: #d32f2f; font-size: 12px; font-weight: 700; cursor: pointer; }
-
-        #loadingModal, #successModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 999;
-        }
-        .loading-card, .success-card {
-            background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 310px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); border-top: 6px solid var(--accent-color);
-        }
-        
-        .blueberry-plant { font-size: 55px; animation: swayPlant 1.2s infinite alternate ease-in-out; margin-bottom: 10px; display: inline-block; }
-        @keyframes swayPlant {
-            0% { transform: rotate(-5deg) scale(1); }
-            100% { transform: rotate(5deg) scale(1.05); }
-        }
-        
-        .success-icon { font-size: 60px; color: var(--accent-color); margin-bottom: 5px; }
-
-        .record-card {
-            background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px;
-            margin-bottom: 12px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border-left: 5px solid var(--accent-color); font-size: 12.5px;
-        }
-        .record-card.pendiente { border-left-color: #f9a825; background: #fffdf5; }
-        .pendiente-tag { display: inline-block; background: #fff3cd; color: #8a6d00; font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; text-transform: uppercase; }
-        .record-row { display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid #f1f3f5; padding-bottom: 5px; }
-        .record-label { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.3px; }
-        .record-val { color: var(--text-main); text-align: right; font-weight: 600; }
-
-        .pending-banner {
-            display: none; align-items: center; justify-content: space-between; gap: 8px;
-            background: #fff8e1; border: 1px solid #ffe082; color: #8a6d00;
-            border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 700; margin-bottom: 14px;
-        }
-        .pending-banner button {
-            background: #f9a825; color: #fff; border: none; border-radius: 8px;
-            padding: 6px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
-        }
-    </style>
-</head>
-<body>
-
-<div id="loadingModal">
-    <div class="loading-card">
-        <div class="blueberry-plant">🌱🌿</div>
-        <h3 style="color: var(--primary-color); margin: 8px 0 0 0; font-size: 16px; font-weight: 700;">Guardando dato</h3>
-    </div>
-</div>
-
-<div id="successModal">
-    <div class="success-card">
-        <div class="success-icon" id="successIcon">✅</div>
-        <h3 id="successMsg" style="color: var(--primary-color); margin: 8px 0 18px 0; font-size: 16px; font-weight: 700;">Guardado con éxito</h3>
-        <button type="button" class="action-btn" onclick="cerrarModalExito()">Aceptar</button>
-    </div>
-</div>
-
-<div class="container">
-
-    <!-- VISTA 1: LOGIN -->
-    <div id="view-login" class="view active login-view">
-        <img src="inkas.png" alt="Inka's Berries Logo" class="company-logo">
-        <h1 class="company-title">Inka's Berries</h1>
-        
-        <div class="login-box">
-            <div class="form-group">
-                <label for="loginUser">Usuario</label>
-                <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="off" autocapitalize="characters">
-            </div>
-            
-            <div class="form-group">
-                <label for="loginPin">PIN</label>
-                <input type="password" id="loginPin" maxlength="6" placeholder="Ingrese su PIN" autocomplete="off">
-            </div>
-
-            <div id="login-error" class="error-msg">Usuario o PIN incorrectos.</div>
-
-            <button type="button" class="action-btn" id="btnLogin" onclick="verificarLogin()" style="margin-top: 5px;">Iniciar Sesión</button>
-        </div>
-    </div>
-
-    <!-- VISTA 2: FORMULARIO DE SANIDAD -->
-    <div id="view-form" class="view">
-        <div class="top-bar">
-            <span class="user-tag" id="displayUser">👤 User</span>
-            <button type="button" class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
-
-        <div id="pendingBanner" class="pending-banner">
-            <span id="pendingText"></span>
-            <button type="button" id="btnSyncNow" onclick="sincronizarPendientes()">Enviar ahora</button>
-        </div>
-        
-        <div class="brand-header">
-            <h2 class="header-title">Control de Sanidad</h2>
-            <div class="subtitle">Sistema de Registro de Cultivos y Plagas</div>
-        </div>
-
-        <form id="sanidadForm">
-            <!-- 1. EVALUADOR(A) -->
-            <div class="form-group">
-                <label for="evaluador">Evaluador(a)</label>
-                <input type="text" id="evaluador" readonly>
-            </div>
-
-            <!-- 2. SEMANA -->
-            <div class="form-group">
-                <label for="semana">Semana</label>
-                <input type="number" inputmode="numeric" id="semana" placeholder="Ej: 43" required>
-            </div>
-
-            <!-- 3. FECHA -->
-            <div class="form-group">
-                <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" required>
-            </div>
-
-            <!-- 4. VARIEDAD -->
-            <div class="form-group">
-                <label for="variedad">Variedad</label>
-                <select id="variedad" required>
-                    <option value="" disabled selected>Seleccione variedad...</option>
-                    <option value="IBUGA 001 (Alessia)">IBUGA 001 (Alessia)</option>
-                    <option value="IBUGA 002 (Abril)">IBUGA 002 (Abril)</option>
-                    <option value="ACCESIONES">ACCESIONES</option>
-                </select>
-            </div>
-
-            <!-- 5. TIPO DE EVALUACIÓN -->
-            <div class="form-group">
-                <label for="tipoEvaluacion">Tipo de Evaluación</label>
-                <select id="tipoEvaluacion" onchange="actualizarPlagas()" required>
-                    <option value="" disabled selected>Seleccione tipo...</option>
-                    <option value="ENGORDE">ENGORDE</option>
-                    <option value="ACLIMATACION">ACLIMATACIÓN</option>
-                </select>
-            </div>
-
-            <!-- 6. N DE BLOQUE -->
-            <div class="form-group">
-                <label for="nBloque">N. de Bloque</label>
-                <select id="nBloque" required>
-                    <option value="" disabled selected>Seleccione bloque...</option>
-                    <option value="I">I</option>
-                    <option value="II">II</option>
-                    <option value="III">III</option>
-                    <option value="IV">IV</option>
-                    <option value="V">V</option>
-                    <option value="VI">VI</option>
-                    <option value="VII">VII</option>
-                    <option value="VIII">VIII</option>
-                    <option value="IX">IX</option>
-                    <option value="X">X</option>
-                </select>
-            </div>
-
-            <!-- 7. N. DE CAMA -->
-            <div class="form-group">
-                <label for="nCama">N. de Cama</label>
-                <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required>
-            </div>
-
-            <!-- 8. PLAGAS -->
-            <div class="form-group">
-                <label for="plagas">Plagas</label>
-                <select id="plagas" required>
-                    <option value="" disabled selected>Primero seleccione tipo de evaluación...</option>
-                </select>
-            </div>
-
-            <!-- 9. CANTIDAD -->
-            <div class="form-group">
-                <label for="cantidad">Cantidad</label>
-                <input type="number" inputmode="numeric" id="cantidad" placeholder="Ej: 5" required>
-            </div>
-
-            <!-- 10. N DE MUESTRA -->
-            <div class="form-group">
-                <label for="nMuestra">N. de Muestra</label>
-                <input type="number" inputmode="numeric" id="nMuestra" placeholder="Ej: 10" required>
-            </div>
-
-            <!-- 11. OBSERVACIONES -->
-            <div class="form-group">
-                <label for="observaciones">Observaciones</label>
-                <textarea id="observaciones" placeholder="Detalles o comentarios adicionales..."></textarea>
-            </div>
-
-            <div class="actions">
-                <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button>
-                <button type="button" class="action-btn btn-secondary" onclick="abrirVisor()">📋 Ver Mis Registros</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- VISTA 3: VISOR DE REGISTROS -->
-    <div id="view-viewer" class="view">
-        <div class="top-bar">
-            <span class="user-tag" style="font-size: 13px;">📋 Historial</span>
-            <button type="button" class="logout-btn" onclick="cambiarVista('form')">Volver</button>
-        </div>
-
-        <button type="button" class="action-btn" onclick="cargarRegistros()" style="margin-bottom: 12px; padding: 10px; font-size: 13px;">🔄 Actualizar Historial</button>
-
-        <div id="viewerContent">
-            <p style="text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</p>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    const URL_APPS_SCRIPT = "TU_URL_DE_APPS_SCRIPT_AQUI";
-
-    let listasPlagas = { engorde: [], aclimatacion: [] };
-
-    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
-    document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
-    document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
-
-    const DB_NAME = 'inkas_sanidad';
-    const DB_STORE = 'pendientes';
-
-    function abrirDB() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(DB_NAME, 1);
-            req.onupgradeneeded = () => {
-                req.result.createObjectStore(DB_STORE, { keyPath: 'id' });
-            };
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
-        });
-    }
-
-    async function dbTx(modo, fn) {
-        const db = await abrirDB();
-        return new Promise((resolve, reject) => {
-            const t = db.transaction(DB_STORE, modo);
-            const req = fn(t.objectStore(DB_STORE));
-            t.oncomplete = () => resolve(req ? req.result : undefined);
-            t.onerror = () => reject(t.error);
-            t.onabort = () => reject(t.error);
-        });
-    }
-
-    const dbPut = (rec) => dbTx('readwrite', s => s.put(rec));
-    const dbDelete = (id) => dbTx('readwrite', s => s.delete(id));
-    const dbAll = () => dbTx('readonly', s => s.getAll());
-
-    function generarId() {
-        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-        return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
-    }
-
-    async function enviarAlServidor(rec) {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 45000);
-        try {
-            const response = await fetch(URL_APPS_SCRIPT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(rec),
-                signal: ctrl.signal
-            });
-            const texto = (await response.text()).trim();
-            return texto === 'EXITO';
-        } catch (error) {
-            console.error('Error de envío:', error);
-            return false;
-        } finally {
-            clearTimeout(timer);
-        }
-    }
-
-    let sincronizando = false;
-
-    async function sincronizarPendientes() {
-        if (sincronizando || !navigator.onLine) return;
-        sincronizando = true;
-        const btn = document.getElementById('btnSyncNow');
-        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
-        try {
-            const lista = await dbAll();
-            lista.sort((a, b) => a.creadoEn - b.creadoEn);
-            for (const rec of lista) {
-                const ok = await enviarAlServidor(rec);
-                if (ok) {
-                    await dbDelete(rec.id);
-                } else {
-                    break;
-                }
-            }
-        } catch (error) {
-            console.error('Error al sincronizar:', error);
-        } finally {
-            sincronizando = false;
-            if (btn) { btn.disabled = false; btn.textContent = 'Enviar ahora'; }
-            actualizarBanner();
-        }
-    }
-
-    async function actualizarBanner() {
-        const banner = document.getElementById('pendingBanner');
-        const texto = document.getElementById('pendingText');
-        const btn = document.getElementById('btnSyncNow');
-        let n = 0;
-        try { n = (await dbAll()).length; } catch (e) { n = 0; }
-        const offline = !navigator.onLine;
-
-        if (!offline && n === 0) {
-            banner.style.display = 'none';
-            return;
-        }
-        let msg = offline ? '📴 Sin conexión' : '📡 En línea';
-        if (n > 0) msg += ` · ${n} registro${n > 1 ? 's' : ''} pendiente${n > 1 ? 's' : ''}`;
-        texto.textContent = msg;
-        btn.style.display = (!offline && n > 0) ? 'inline-block' : 'none';
-        banner.style.display = 'flex';
-    }
-
-    window.addEventListener('online', () => { actualizarBanner(); sincronizarPendientes(); });
-    window.addEventListener('offline', actualizarBanner);
-    setInterval(() => { if (navigator.onLine) sincronizarPendientes(); }, 60000);
-
-    function cambiarVista(vista) {
-        document.querySelectorAll('.view').forEach(el => {
-            el.classList.remove('active');
-            el.style.display = 'none';
-        });
-        
-        const objetivo = document.getElementById('view-' + vista);
-        if (objetivo) {
-            objetivo.classList.add('active');
-            objetivo.style.display = (vista === 'login') ? 'flex' : 'block';
-            
-            if (vista === 'viewer') {
-                setTimeout(cargarRegistros, 50);
-            }
-            if (vista === 'form') {
-                actualizarBanner();
-            }
-        }
-    }
-
-    async function cargarListasPlagas() {
-        try {
-            const response = await fetch(URL_APPS_SCRIPT + "?action=listas");
-            const data = await response.json();
-            if (data) {
-                listasPlagas.engorde = data.engorde || [];
-                listasPlagas.aclimatacion = data.aclimatacion || [];
-                try { localStorage.setItem('inka_listas', JSON.stringify(listasPlagas)); } catch (e) {}
-            }
-        } catch (error) {
-            console.error("Error al cargar plagas:", error);
-            try {
-                const cache = JSON.parse(localStorage.getItem('inka_listas') || 'null');
-                if (cache) {
-                    listasPlagas.engorde = cache.engorde || [];
-                    listasPlagas.aclimatacion = cache.aclimatacion || [];
-                }
-            } catch (e) {}
-        }
-    }
-
-    function actualizarPlagas() {
-        const tipo = document.getElementById('tipoEvaluacion').value;
-        const selectPlagas = document.getElementById('plagas');
-        selectPlagas.innerHTML = '<option value="" disabled selected>Seleccione plaga...</option>';
-
-        let plagasDisponibles = [];
-        if (tipo === "ENGORDE") {
-            plagasDisponibles = listasPlagas.engorde;
-        } else if (tipo === "ACLIMATACION" || tipo === "ACLIMATACIÓN") {
-            plagasDisponibles = listasPlagas.aclimatacion;
-        }
-
-        plagasDisponibles.forEach(plaga => {
-            let opt = document.createElement('option');
-            opt.value = plaga;
-            opt.textContent = plaga;
-            selectPlagas.appendChild(opt);
-        });
-    }
-
-    async function hashCredenciales(usuario, pin) {
-        const texto = usuario + ':' + pin;
-        if (window.crypto && crypto.subtle) {
-            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-        return btoa(texto);
-    }
-
-    async function guardarCredencialLocal(usuario, pin) {
-        try {
-            const mapa = JSON.parse(localStorage.getItem('inka_auth') || '{}');
-            mapa[usuario] = await hashCredenciales(usuario, pin);
-            localStorage.setItem('inka_auth', JSON.stringify(mapa));
-        } catch (e) {}
-    }
-
-    async function validarCredencialLocal(usuario, pin) {
-        try {
-            const mapa = JSON.parse(localStorage.getItem('inka_auth') || '{}');
-            return !!mapa[usuario] && mapa[usuario] === await hashCredenciales(usuario, pin);
-        } catch (e) {
-            return false;
-        }
-    }
-
-    async function entrarAlFormulario(usuarioInput) {
-        document.getElementById('evaluador').value = usuarioInput;
-        document.getElementById('displayUser').innerText = "👤 " + usuarioInput;
-        
-        const hoy = new Date();
-        const anio = hoy.getFullYear();
-        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoy.getDate()).padStart(2, '0');
-        document.getElementById('fecha').value = `${anio}-${mes}-${dia}`;
-        
-        document.getElementById('semana').value = obtenerNumeroSemana(hoy);
-
-        await cargarListasPlagas();
-
-        document.getElementById('loginUser').value = '';
-        document.getElementById('loginPin').value = '';
-        cambiarVista('form');
-        sincronizarPendientes();
-    }
-
-    async function verificarLogin() {
-        const usuarioInput = document.getElementById('loginUser').value.trim().toUpperCase();
-        const pinInput = document.getElementById('loginPin').value.trim();
-        const errorBox = document.getElementById('login-error');
-        const btnLogin = document.getElementById('btnLogin');
-
-        if (!usuarioInput || !pinInput) {
-            errorBox.textContent = "Por favor, ingrese usuario y PIN.";
-            errorBox.style.display = "block";
-            return;
-        }
-
-        btnLogin.innerText = "Verificando...";
-        btnLogin.disabled = true;
-        errorBox.style.display = "none";
-
-        try {
-            const response = await fetch(URL_APPS_SCRIPT + "?action=usuarios");
-            const usuarios = await response.json();
-            
-            let encontrado = false;
-            usuarios.forEach(u => {
-                if (u.usuario.toUpperCase() === usuarioInput && String(u.pin) === String(pinInput)) {
-                    encontrado = true;
-                }
-            });
-
-            if (encontrado) {
-                await guardarCredencialLocal(usuarioInput, pinInput);
-                await entrarAlFormulario(usuarioInput);
-            } else {
-                errorBox.textContent = "Usuario o PIN incorrectos.";
-                errorBox.style.display = "block";
-            }
-        } catch (error) {
-            console.error('Error al verificar usuarios:', error);
-            if (await validarCredencialLocal(usuarioInput, pinInput)) {
-                await entrarAlFormulario(usuarioInput);
-            } else {
-                errorBox.textContent = "Error de conexión con el servidor.";
-                errorBox.style.display = "block";
-            }
-        } finally {
-            btnLogin.innerText = "Iniciar Sesión";
-            btnLogin.disabled = false;
-        }
-    }
-
-    function obtenerNumeroSemana(d) {
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-        var inicioAno = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-        var semanaNo = Math.ceil((((d - inicioAno) / 86400000) + 1)/7);
-        return semanaNo;
-    }
-
-    function cerrarSesion() { cambiarVista('login'); }
-    function abrirVisor() { cambiarVista('viewer'); }
-
-    function formatearFechaSimple(fechaStr) {
-        if (!fechaStr) return "";
-        let soloFecha = fechaStr.split('T')[0];
-        let partes = soloFecha.split('-');
-        if (partes.length === 3) {
-            return `${partes[2]}-${partes[1]}-${partes[0]}`;
-        }
-        return fechaStr;
-    }
-
-    async function htmlPendientes() {
-        let lista = [];
-        try { lista = await dbAll(); } catch (e) { return ''; }
-        lista.sort((a, b) => b.creadoEn - a.creadoEn);
-        let html = '';
-        lista.forEach(item => {
-            let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : '';
-            html += `
-                <div class="record-card pendiente">
-                    <span class="pendiente-tag">⏳ Pendiente de envío</span>
-                    <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
-                    <div class="record-row"><span class="record-label">Semana</span><span class="record-val">${item.semana}</span></div>
-                    <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${formatearFechaSimple(item.fecha)}</span></div>
-                    <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
-                    <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
-                    <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
-                    <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
-                    <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
-                    <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
-                    ${obsText}
-                </div>
-            `;
-        });
-        return html;
-    }
-
-    async function cargarRegistros() {
-        const contenedor = document.getElementById('viewerContent');
-        contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</p>';
-
-        const pendientesHtml = await htmlPendientes();
-
-        try {
-            const response = await fetch(URL_APPS_SCRIPT + "?action=registros");
-            const data = await response.json();
-
-            if ((!data || data.length === 0) && !pendientesHtml) {
-                contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px;">No hay registros guardados todavía.</p>';
-                return;
-            }
-
-            let html = pendientesHtml;
-            (data || []).forEach(item => {
-                let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : '';
-                let fechaBonita = formatearFechaSimple(item.fecha);
-                
-                html += `
-                    <div class="record-card">
-                        <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div>
-                        <div class="record-row"><span class="record-label">Semana</span><span class="record-val">${item.semana}</span></div>
-                        <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${fechaBonita}</span></div>
-                        <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div>
-                        <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div>
-                        <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div>
-                        <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div>
-                        <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div>
-                        <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div>
-                        ${obsText}
-                    </div>
-                `;
-            });
-            contenedor.innerHTML = html;
-        } catch (error) {
-            console.error(error);
-            contenedor.innerHTML = pendientesHtml +
-                '<p style="text-align: center; color: #d32f2f; font-size: 13px;">Error al cargar el historial.</p>';
-        }
-    }
-
-    function mostrarExito(mensaje, icono) {
-        document.getElementById('successMsg').textContent = mensaje;
-        document.getElementById('successIcon').textContent = icono || '✅';
-        document.getElementById('successModal').style.display = 'flex';
-    }
-
-    function limpiarFormularioTrasGuardar() {
-        document.getElementById('variedad').selectedIndex = 0;
-        document.getElementById('tipoEvaluacion').selectedIndex = 0;
-        document.getElementById('nBloque').selectedIndex = 0;
-        document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>';
-        document.getElementById('nCama').value = '';
-        document.getElementById('cantidad').value = '';
-        document.getElementById('nMuestra').value = '';
-        document.getElementById('observaciones').value = '';
-    }
-
-    document.getElementById('sanidadForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const btnSave = document.getElementById('btn-save');
-        const loading = document.getElementById('loadingModal');
-
-        btnSave.disabled = true;
-        loading.style.display = 'flex';
-
-        try {
-            const rec = {
-                id: generarId(),
-                creadoEn: Date.now(),
-                evaluador: document.getElementById('evaluador').value,
-                semana: document.getElementById('semana').value,
-                fecha: document.getElementById('fecha').value,
-                variedad: document.getElementById('variedad').value,
-                tipoEvaluacion: document.getElementById('tipoEvaluacion').value,
-                nBloque: document.getElementById('nBloque').value,
-                nCama: document.getElementById('nCama').value,
-                plagas: document.getElementById('plagas').value,
-                cantidad: document.getElementById('cantidad').value,
-                nMuestra: document.getElementById('nMuestra').value,
-                observaciones: document.getElementById('observaciones').value
-            };
-
-            let guardadoLocal = false;
-            try { await dbPut(rec); guardadoLocal = true; } catch (errDb) { console.error(errDb); }
-
-            let enviado = false;
-            if (navigator.onLine) enviado = await enviarAlServidor(rec);
-
-            loading.style.display = 'none';
-
-            if (enviado) {
-                if (guardadoLocal) { try { await dbDelete(rec.id); } catch (x) {} }
-                mostrarExito('Guardado con éxito', '✅');
-                limpiarFormularioTrasGuardar();
-                sincronizarPendientes();
-            } else if (guardadoLocal) {
-                mostrarExito('Sin conexión estable: guardado en el teléfono. Se enviará automáticamente.', '📴');
-                limpiarFormularioTrasGuardar();
-            } else {
-                alert("No se pudo guardar. Revise su conexión e intente de nuevo.");
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            loading.style.display = 'none';
-            alert("Hubo un error al guardar.");
-        } finally {
-            btnSave.disabled = false;
-            loading.style.display = 'none';
-            actualizarBanner();
-        }
-    });
-
-    function cerrarModalExito() {
-        document.getElementById('successModal').style.display = 'none';
-    }
-
-    cambiarVista('login');
-</script>
-
-</body>
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"> 
+    <title>Inka's Berries | Sanidad</title> 
+     
+    <link rel="apple-touch-icon" href="ac.jpg"> 
+    <link rel="icon" type="image/jpeg" href="ac.jpg"> 
+
+    <style> 
+        :root { 
+            --primary-color: #1b5e20; 
+            --primary-light: #2e7d32; 
+            --accent-color: #4caf50; 
+            --surface-bg: #ffffff; 
+            --page-bg: #f8f9fa; 
+            --text-main: #2c3e50; 
+            --text-muted: #7f8c8d; 
+            --border-color: #e0e0e0; 
+            --readonly-bg: #f1f3f5; 
+        } 
+
+        * { touch-action: manipulation; box-sizing: border-box; } 
+
+        html, body { 
+            margin: 0; padding: 0; width: 100%; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--page-bg); color: var(--text-main); 
+            -webkit-user-select: none; user-select: none; 
+        } 
+
+        body { display: flex; flex-direction: column; align-items: center; padding: 12px; min-height: 100vh; } 
+
+        .container { 
+            width: 100%; max-width: 460px; background: var(--surface-bg); padding: 20px; 
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); 
+            border-top: 6px solid var(--primary-color); margin-bottom: 20px; 
+        } 
+
+        .view { display: none !important; } 
+        .view.active { display: block !important; } 
+
+        .login-view { text-align: center; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; } 
+        .login-view.active { display: flex !important; } 
+
+        .company-logo { width: 130px; height: auto; margin-bottom: 15px; object-fit: contain; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); } 
+        .company-title { color: var(--primary-color); font-size: 1.35rem; font-weight: 800; text-transform: uppercase; margin: 0 0 25px 0; letter-spacing: 0.5px; } 
+        .login-box { display: flex; flex-direction: column; gap: 16px; text-align: left; width: 100%; } 
+
+        .brand-header { text-align: center; margin-bottom: 16px; } 
+        .header-title { color: var(--primary-color); margin: 0; text-transform: uppercase; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; } 
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 4px; } 
+
+        .form-group { margin-bottom: 14px; } 
+        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 11.5px; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.3px; } 
+
+        input, select, textarea { 
+            width: 100% !important; max-width: 100% !important; min-width: 0 !important; 
+            padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; 
+            font-size: 14px; background-color: #fafafa; outline: none; box-sizing: border-box !important; 
+            transition: all 0.2s ease; 
+            -webkit-user-select: text; user-select: text; 
+        } 
+
+        textarea { resize: vertical; min-height: 80px; } 
+
+        input:focus, select:focus, textarea:focus {  
+            border-color: var(--accent-color); background-color: #fff; 
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);  
+        } 
+        input:read-only { background-color: var(--readonly-bg); color: #555; font-weight: 600; border-color: #dcdcdc; } 
+
+        .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; } 
+
+        button.action-btn { 
+            width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700; 
+            cursor: pointer; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; 
+            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.2); transition: transform 0.1s ease; 
+        } 
+        button.action-btn:active { transform: scale(0.98); } 
+        button.action-btn:disabled { opacity: 0.6; cursor: not-allowed; } 
+
+        .btn-secondary { background: #6c757d !important; box-shadow: none !important; } 
+
+        .error-msg { color: #d32f2f; font-size: 12.5px; font-weight: 700; text-align: center; display: none; background: #ffebee; padding: 8px; border-radius: 8px; } 
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); } 
+        .user-tag { font-size: 12px; color: var(--primary-color); font-weight: 700; background: var(--primary-bg); padding: 4px 10px; border-radius: 20px; } 
+        .logout-btn { background: none; border: none; color: #d32f2f; font-size: 12px; font-weight: 700; cursor: pointer; } 
+
+        #loadingModal, #successModal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 999; 
+        } 
+        .loading-card, .success-card { 
+            background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 310px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); border-top: 6px solid var(--accent-color); 
+        } 
+         
+        .blueberry-plant { font-size: 55px; animation: swayPlant 1.2s infinite alternate ease-in-out; margin-bottom: 10px; display: inline-block; } 
+        @keyframes swayPlant { 
+            0% { transform: rotate(-5deg) scale(1); } 
+            100% { transform: rotate(5deg) scale(1.05); } 
+        } 
+         
+        .success-icon { font-size: 60px; color: var(--accent-color); margin-bottom: 5px; } 
+
+        .record-card { 
+            background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; 
+            margin-bottom: 12px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+            border-left: 5px solid var(--accent-color); font-size: 12.5px; 
+        } 
+        .record-card.pendiente { border-left-color: #f9a825; background: #fffdf5; } 
+        .pendiente-tag { display: inline-block; background: #fff3cd; color: #8a6d00; font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; text-transform: uppercase; } 
+        .record-row { display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid #f1f3f5; padding-bottom: 5px; } 
+        .record-label { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.3px; } 
+        .record-val { color: var(--text-main); text-align: right; font-weight: 600; } 
+
+        .pending-banner { 
+            display: none; align-items: center; justify-content: space-between; gap: 8px; 
+            background: #fff8e1; border: 1px solid #ffe082; color: #8a6d00; 
+            border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 700; margin-bottom: 14px; 
+        } 
+        .pending-banner button { 
+            background: #f9a825; color: #fff; border: none; border-radius: 8px; 
+            padding: 6px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; 
+        } 
+    </style> 
+</head> 
+<body> 
+
+<div id="loadingModal"> 
+    <div class="loading-card"> 
+        <div class="blueberry-plant">🌱🌿</div> 
+        <h3 style="color: var(--primary-color); margin: 8px 0 0 0; font-size: 16px; font-weight: 700;">Guardando dato</h3> 
+    </div> 
+</div> 
+
+<div id="successModal"> 
+    <div class="success-card"> 
+        <div class="success-icon" id="successIcon">✅</div> 
+        <h3 id="successMsg" style="color: var(--primary-color); margin: 8px 0 18px 0; font-size: 16px; font-weight: 700;">Guardado con éxito</h3> 
+        <button type="button" class="action-btn" onclick="cerrarModalExito()">Aceptar</button> 
+    </div> 
+</div> 
+
+<div class="container"> 
+
+    <!-- VISTA 1: LOGIN --> 
+    <div id="view-login" class="view active login-view"> 
+        <img src="inkas.png" alt="Inka's Berries Logo" class="company-logo"> 
+        <h1 class="company-title">Inka's Berries</h1> 
+         
+        <div class="login-box"> 
+            <div class="form-group"> 
+                <label for="loginUser">Usuario</label> 
+                <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="off" autocapitalize="characters"> 
+            </div> 
+             
+            <div class="form-group"> 
+                <label for="loginPin">PIN</label> 
+                <input type="password" id="loginPin" maxlength="6" placeholder="Ingrese su PIN" autocomplete="off"> 
+            </div> 
+
+            <div id="login-error" class="error-msg">Usuario o PIN incorrectos.</div> 
+
+            <button type="button" class="action-btn" id="btnLogin" onclick="verificarLogin()" style="margin-top: 5px;">Iniciar Sesión</button> 
+        </div> 
+    </div> 
+
+    <!-- VISTA 2: FORMULARIO DE SANIDAD --> 
+    <div id="view-form" class="view"> 
+        <div class="top-bar"> 
+            <span class="user-tag" id="displayUser">👤 User</span> 
+            <button type="button" class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button> 
+        </div> 
+
+        <div id="pendingBanner" class="pending-banner"> 
+            <span id="pendingText"></span> 
+            <button type="button" id="btnSyncNow" onclick="sincronizarPendientes()">Enviar ahora</button> 
+        </div> 
+         
+        <div class="brand-header"> 
+            <h2 class="header-title">Control de Sanidad</h2> 
+            <div class="subtitle">Sistema de Registro de Cultivos y Plagas</div> 
+        </div> 
+
+        <form id="sanidadForm"> 
+            <!-- 1. EVALUADOR(A) --> 
+            <div class="form-group"> 
+                <label for="evaluador">Evaluador(a)</label> 
+                <input type="text" id="evaluador" readonly> 
+            </div> 
+
+            <!-- 2. SEMANA --> 
+            <div class="form-group"> 
+                <label for="semana">Semana</label> 
+                <input type="number" inputmode="numeric" id="semana" placeholder="Ej: 43" required> 
+            </div> 
+
+            <!-- 3. FECHA --> 
+            <div class="form-group"> 
+                <label for="fecha">Fecha</label> 
+                <input type="date" id="fecha" required> 
+            </div> 
+
+            <!-- 4. VARIEDAD --> 
+            <div class="form-group"> 
+                <label for="variedad">Variedad</label> 
+                <select id="variedad" required> 
+                    <option value="" disabled selected>Seleccione variedad...</option> 
+                    <option value="IBUGA 001 (Alessia)">IBUGA 001 (Alessia)</option> 
+                    <option value="IBUGA 002 (Abril)">IBUGA 002 (Abril)</option> 
+                    <option value="ACCESIONES">ACCESIONES</option> 
+                </select> 
+            </div> 
+
+            <!-- 5. TIPO DE EVALUACIÓN --> 
+            <div class="form-group"> 
+                <label for="tipoEvaluacion">Tipo de Evaluación</label> 
+                <select id="tipoEvaluacion" onchange="actualizarPlagas()" required> 
+                    <option value="" disabled selected>Seleccione tipo...</option> 
+                    <option value="ENGORDE">ENGORDE</option> 
+                    <option value="ACLIMATACION">ACLIMATACIÓN</option> 
+                </select> 
+            </div> 
+
+            <!-- 6. N DE BLOQUE --> 
+            <div class="form-group"> 
+                <label for="nBloque">N. de Bloque</label> 
+                <select id="nBloque" required> 
+                    <option value="" disabled selected>Seleccione bloque...</option> 
+                    <option value="I">I</option> 
+                    <option value="II">II</option> 
+                    <option value="III">III</option> 
+                    <option value="IV">IV</option> 
+                    <option value="V">V</option> 
+                    <option value="VI">VI</option> 
+                    <option value="VII">VII</option> 
+                    <option value="VIII">VIII</option> 
+                    <option value="IX">IX</option> 
+                    <option value="X">X</option> 
+                </select> 
+            </div> 
+
+            <!-- 7. N. DE CAMA --> 
+            <div class="form-group"> 
+                <label for="nCama">N. de Cama</label> 
+                <input type="number" inputmode="numeric" id="nCama" placeholder="Ej: 1" required> 
+            </div> 
+
+            <!-- 8. PLAGAS --> 
+            <div class="form-group"> 
+                <label for="plagas">Plagas</label> 
+                <select id="plagas" required> 
+                    <option value="" disabled selected>Primero seleccione tipo de evaluación...</option> 
+                </select> 
+            </div> 
+
+            <!-- 9. CANTIDAD --> 
+            <div class="form-group"> 
+                <label for="cantidad">Cantidad</label> 
+                <input type="number" inputmode="numeric" id="cantidad" placeholder="Ej: 5" required> 
+            </div> 
+
+            <!-- 10. N DE MUESTRA --> 
+            <div class="form-group"> 
+                <label for="nMuestra">N. de Muestra</label> 
+                <input type="number" inputmode="numeric" id="nMuestra" placeholder="Ej: 10" required> 
+            </div> 
+
+            <!-- 11. OBSERVACIONES --> 
+            <div class="form-group"> 
+                <label for="observaciones">Observaciones</label> 
+                <textarea id="observaciones" placeholder="Detalles o comentarios adicionales..."></textarea> 
+            </div> 
+
+            <div class="actions"> 
+                <button type="submit" id="btn-save" class="action-btn">Guardar Registro</button> 
+                <button type="button" class="action-btn btn-secondary" onclick="abrirVisor()">📋 Ver Mis Registros</button> 
+            </div> 
+        </form> 
+    </div> 
+
+    <!-- VISTA 3: VISOR DE REGISTROS --> 
+    <div id="view-viewer" class="view"> 
+        <div class="top-bar"> 
+            <span class="user-tag" style="font-size: 13px;">📋 Historial</span> 
+            <button type="button" class="logout-btn" onclick="cambiarVista('form')">Volver</button> 
+        </div> 
+
+        <button type="button" class="action-btn" onclick="cargarRegistros()" style="margin-bottom: 12px; padding: 10px; font-size: 13px;">🔄 Actualizar Historial</button> 
+
+        <div id="viewerContent"> 
+            <p style="text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</p> 
+        </div> 
+    </div> 
+
+</div> 
+
+<script> 
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzKcRXgn3mR3W2dR9e75z8HhIbVWsy_1xA40DUVvEhoCcMWX4bWX92Kgn2syMYPOw8u/exec"; 
+
+    let listasPlagas = { engorde: [], aclimatacion: [] }; 
+
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); }); 
+    document.addEventListener('gesturechange', function (e) { e.preventDefault(); }); 
+    document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false }); 
+
+    const DB_NAME = 'inkas_sanidad'; 
+    const DB_STORE = 'pendientes'; 
+
+    function abrirDB() { 
+        return new Promise((resolve, reject) => { 
+            const req = indexedDB.open(DB_NAME, 1); 
+            req.onupgradeneeded = () => { 
+                req.result.createObjectStore(DB_STORE, { keyPath: 'id' }); 
+            }; 
+            req.onsuccess = () => resolve(req.result); 
+            req.onerror = () => reject(req.error); 
+        }); 
+    } 
+
+    async function dbTx(modo, fn) { 
+        const db = await abrirDB(); 
+        return new Promise((resolve, reject) => { 
+            const t = db.transaction(DB_STORE, modo); 
+            const req = fn(t.objectStore(DB_STORE)); 
+            t.oncomplete = () => resolve(req ? req.result : undefined); 
+            t.onerror = () => reject(t.error); 
+            t.onabort = () => reject(t.error); 
+        }); 
+    } 
+
+    const dbPut = (rec) => dbTx('readwrite', s => s.put(rec)); 
+    const dbDelete = (id) => dbTx('readwrite', s => s.delete(id)); 
+    const dbAll = () => dbTx('readonly', s => s.getAll()); 
+
+    function generarId() { 
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); 
+        return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); 
+    } 
+
+    async function enviarAlServidor(rec) { 
+        const ctrl = new AbortController(); 
+        const timer = setTimeout(() => ctrl.abort(), 45000); 
+        try { 
+            const response = await fetch(URL_APPS_SCRIPT, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify(rec), 
+                signal: ctrl.signal 
+            }); 
+            const texto = (await response.text()).trim(); 
+            return texto === 'EXITO'; 
+        } catch (error) { 
+            console.error('Error de envío:', error); 
+            return false; 
+        } finally { 
+            clearTimeout(timer); 
+        } 
+    } 
+
+    let sincronizando = false; 
+
+    async function sincronizarPendientes() { 
+        if (sincronizando || !navigator.onLine) return; 
+        sincronizando = true; 
+        const btn = document.getElementById('btnSyncNow'); 
+        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; } 
+        try { 
+            const lista = await dbAll(); 
+            lista.sort((a, b) => a.creadoEn - b.creadoEn); 
+            for (const rec of lista) { 
+                const ok = await enviarAlServidor(rec); 
+                if (ok) { 
+                    await dbDelete(rec.id); 
+                } else { 
+                    break; 
+                } 
+            } 
+        } catch (error) { 
+            console.error('Error al sincronizar:', error); 
+        } finally { 
+            sincronizando = false; 
+            if (btn) { btn.disabled = false; btn.textContent = 'Enviar ahora'; } 
+            actualizarBanner(); 
+        } 
+    } 
+
+    async function actualizarBanner() { 
+        const banner = document.getElementById('pendingBanner'); 
+        const texto = document.getElementById('pendingText'); 
+        const btn = document.getElementById('btnSyncNow'); 
+        let n = 0; 
+        try { n = (await dbAll()).length; } catch (e) { n = 0; } 
+        const offline = !navigator.onLine; 
+
+        if (!offline && n === 0) { 
+            banner.style.display = 'none'; 
+            return; 
+        } 
+        let msg = offline ? '📴 Sin conexión' : '📡 En línea'; 
+        if (n > 0) msg += ` · ${n} registro${n > 1 ? 's' : ''} pendiente${n > 1 ? 's' : ''}`; 
+        texto.textContent = msg; 
+        btn.style.display = (!offline && n > 0) ? 'inline-block' : 'none'; 
+        banner.style.display = 'flex'; 
+    } 
+
+    window.addEventListener('online', () => { actualizarBanner(); sincronizarPendientes(); }); 
+    window.addEventListener('offline', actualizarBanner); 
+    setInterval(() => { if (navigator.onLine) sincronizarPendientes(); }, 60000); 
+
+    function cambiarVista(vista) { 
+        document.querySelectorAll('.view').forEach(el => { 
+            el.classList.remove('active'); 
+            el.style.display = 'none'; 
+        }); 
+         
+        const objetivo = document.getElementById('view-' + vista); 
+        if (objetivo) { 
+            objetivo.classList.add('active'); 
+            objetivo.style.display = (vista === 'login') ? 'flex' : 'block'; 
+             
+            if (vista === 'viewer') { 
+                setTimeout(cargarRegistros, 50); 
+            } 
+            if (vista === 'form') { 
+                actualizarBanner(); 
+            } 
+        } 
+    } 
+
+    async function cargarListasPlagas() { 
+        try { 
+            const response = await fetch(URL_APPS_SCRIPT + "?action=listas"); 
+            const data = await response.json(); 
+            if (data) { 
+                listasPlagas.engorde = data.engorde || []; 
+                listasPlagas.aclimatacion = data.aclimatacion || []; 
+                try { localStorage.setItem('inka_listas', JSON.stringify(listasPlagas)); } catch (e) {} 
+            } 
+        } catch (error) { 
+            console.error("Error al cargar plagas:", error); 
+            try { 
+                const cache = JSON.parse(localStorage.getItem('inka_listas') || 'null'); 
+                if (cache) { 
+                    listasPlagas.engorde = cache.engorde || []; 
+                    listasPlagas.aclimatacion = cache.aclimatacion || []; 
+                } 
+            } catch (e) {} 
+        } 
+    } 
+
+    function actualizarPlagas() { 
+        const tipo = document.getElementById('tipoEvaluacion').value; 
+        const selectPlagas = document.getElementById('plagas'); 
+        selectPlagas.innerHTML = '<option value="" disabled selected>Seleccione plaga...</option>'; 
+
+        let plagasDisponibles = []; 
+        if (tipo === "ENGORDE") { 
+            plagasDisponibles = listasPlagas.engorde; 
+        } else if (tipo === "ACLIMATACION" || tipo === "ACLIMATACIÓN") { 
+            plagasDisponibles = listasPlagas.aclimatacion; 
+        } 
+
+        plagasDisponibles.forEach(plaga => { 
+            let opt = document.createElement('option'); 
+            opt.value = plaga; 
+            opt.textContent = plaga; 
+            selectPlagas.appendChild(opt); 
+        }); 
+    } 
+
+    async function hashCredenciales(usuario, pin) { 
+        const texto = usuario + ':' + pin; 
+        if (window.crypto && crypto.subtle) { 
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(texto)); 
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join(''); 
+        } 
+        return btoa(texto); 
+    } 
+
+    async function guardarCredencialLocal(usuario, pin) { 
+        try { 
+            const mapa = JSON.parse(localStorage.getItem('inka_auth') || '{}'); 
+            mapa[usuario] = await hashCredenciales(usuario, pin); 
+            localStorage.setItem('inka_auth', JSON.stringify(mapa)); 
+        } catch (e) {} 
+    } 
+
+    async function validarCredencialLocal(usuario, pin) { 
+        try { 
+            const mapa = JSON.parse(localStorage.getItem('inka_auth') || '{}'); 
+            return !!mapa[usuario] && mapa[usuario] === await hashCredenciales(usuario, pin); 
+        } catch (e) { 
+            return false; 
+        } 
+    } 
+
+    async function entrarAlFormulario(usuarioInput) { 
+        document.getElementById('evaluador').value = usuarioInput; 
+        document.getElementById('displayUser').innerText = "👤 " + usuarioInput; 
+         
+        const hoy = new Date(); 
+        const anio = hoy.getFullYear(); 
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0'); 
+        const dia = String(hoy.getDate()).padStart(2, '0'); 
+        document.getElementById('fecha').value = `${anio}-${mes}-${dia}`; 
+         
+        document.getElementById('semana').value = obtenerNumeroSemana(hoy); 
+
+        await cargarListasPlagas(); 
+
+        document.getElementById('loginUser').value = ''; 
+        document.getElementById('loginPin').value = ''; 
+        cambiarVista('form'); 
+        sincronizarPendientes(); 
+    } 
+
+    async function verificarLogin() { 
+        const usuarioInput = document.getElementById('loginUser').value.trim().toUpperCase(); 
+        const pinInput = document.getElementById('loginPin').value.trim(); 
+        const errorBox = document.getElementById('login-error'); 
+        const btnLogin = document.getElementById('btnLogin'); 
+
+        if (!usuarioInput || !pinInput) { 
+            errorBox.textContent = "Por favor, ingrese usuario y PIN."; 
+            errorBox.style.display = "block"; 
+            return; 
+        } 
+
+        btnLogin.innerText = "Verificando..."; 
+        btnLogin.disabled = true; 
+        errorBox.style.display = "none"; 
+
+        try { 
+            const response = await fetch(URL_APPS_SCRIPT + "?action=usuarios"); 
+            const usuarios = await response.json(); 
+             
+            let encontrado = false; 
+            usuarios.forEach(u => { 
+                if (u.usuario.toUpperCase() === usuarioInput && String(u.pin) === String(pinInput)) { 
+                    encontrado = true; 
+                } 
+            }); 
+
+            if (encontrado) { 
+                await guardarCredencialLocal(usuarioInput, pinInput); 
+                await entrarAlFormulario(usuarioInput); 
+            } else { 
+                errorBox.textContent = "Usuario o PIN incorrectos."; 
+                errorBox.style.display = "block"; 
+            } 
+        } catch (error) { 
+            console.error('Error al verificar usuarios:', error); 
+            if (await validarCredencialLocal(usuarioInput, pinInput)) { 
+                await entrarAlFormulario(usuarioInput); 
+            } else { 
+                errorBox.textContent = "Error de conexión con el servidor."; 
+                errorBox.style.display = "block"; 
+            } 
+        } finally { 
+            btnLogin.innerText = "Iniciar Sesión"; 
+            btnLogin.disabled = false; 
+        } 
+    } 
+
+    function obtenerNumeroSemana(d) { 
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); 
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7)); 
+        var inicioAno = new Date(Date.UTC(d.getUTCFullYear(),0,1)); 
+        var semanaNo = Math.ceil((((d - inicioAno) / 86400000) + 1)/7); 
+        return semanaNo; 
+    } 
+
+    function cerrarSesion() { cambiarVista('login'); } 
+    function abrirVisor() { cambiarVista('viewer'); } 
+
+    function formatearFechaSimple(fechaStr) { 
+        if (!fechaStr) return ""; 
+        let soloFecha = fechaStr.split('T')[0]; 
+        let partes = soloFecha.split('-'); 
+        if (partes.length === 3) { 
+            return `${partes[2]}-${partes[1]}-${partes[0]}`; 
+        } 
+        return fechaStr; 
+    } 
+
+    async function htmlPendientes() { 
+        let lista = []; 
+        try { lista = await dbAll(); } catch (e) { return ''; } 
+        lista.sort((a, b) => b.creadoEn - a.creadoEn); 
+        let html = ''; 
+        lista.forEach(item => { 
+            let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : ''; 
+            html += ` 
+                <div class="record-card pendiente"> 
+                    <span class="pendiente-tag">⏳ Pendiente de envío</span> 
+                    <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div> 
+                    <div class="record-row"><span class="record-label">Semana</span><span class="record-val">${item.semana}</span></div> 
+                    <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${formatearFechaSimple(item.fecha)}</span></div> 
+                    <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div> 
+                    <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div> 
+                    <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div> 
+                    <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div> 
+                    <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div> 
+                    <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div> 
+                    ${obsText} 
+                </div> 
+            `; 
+        }); 
+        return html; 
+    } 
+
+    async function cargarRegistros() { 
+        const contenedor = document.getElementById('viewerContent'); 
+        contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px;">Cargando registros...</p>'; 
+
+        const pendientesHtml = await htmlPendientes(); 
+
+        try { 
+            const response = await fetch(URL_APPS_SCRIPT + "?action=registros"); 
+            const data = await response.json(); 
+
+            if ((!data || data.length === 0) && !pendientesHtml) { 
+                contenedor.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px;">No hay registros guardados todavía.</p>'; 
+                return; 
+            } 
+
+            let html = pendientesHtml; 
+            (data || []).forEach(item => { 
+                let obsText = item.observaciones ? `<div class="record-row"><span class="record-label">Obs.</span><span class="record-val">${item.observaciones}</span></div>` : ''; 
+                let fechaBonita = formatearFechaSimple(item.fecha); 
+                 
+                html += ` 
+                    <div class="record-card"> 
+                        <div class="record-row"><span class="record-label">Evaluador</span><span class="record-val">${item.evaluador}</span></div> 
+                        <div class="record-row"><span class="record-label">Semana</span><span class="record-val">${item.semana}</span></div> 
+                        <div class="record-row"><span class="record-label">Fecha</span><span class="record-val">${fechaBonita}</span></div> 
+                        <div class="record-row"><span class="record-label">Variedad</span><span class="record-val">${item.variedad}</span></div> 
+                        <div class="record-row"><span class="record-label">Tipo Eval.</span><span class="record-val">${item.tipoEvaluacion}</span></div> 
+                        <div class="record-row"><span class="record-label">Bloque / Cama</span><span class="record-val">Bloque: ${item.nBloque} | Cama: ${item.nCama}</span></div> 
+                        <div class="record-row"><span class="record-label">Plagas</span><span class="record-val">${item.plagas}</span></div> 
+                        <div class="record-row"><span class="record-label">Cantidad</span><span class="record-val">${item.cantidad}</span></div> 
+                        <div class="record-row"><span class="record-label">N. Muestra</span><span class="record-val">${item.nMuestra}</span></div> 
+                        ${obsText} 
+                    </div> 
+                `; 
+            }); 
+            contenedor.innerHTML = html; 
+        } catch (error) { 
+            console.error(error); 
+            contenedor.innerHTML = pendientesHtml + 
+                '<p style="text-align: center; color: #d32f2f; font-size: 13px;">Error al cargar el historial.</p>'; 
+        } 
+    } 
+
+    function mostrarExito(mensaje, icono) { 
+        document.getElementById('successMsg').textContent = mensaje; 
+        document.getElementById('successIcon').textContent = icono || '✅'; 
+        document.getElementById('successModal').style.display = 'flex'; 
+    } 
+
+    function limpiarFormularioTrasGuardar() { 
+        document.getElementById('variedad').selectedIndex = 0; 
+        document.getElementById('tipoEvaluacion').selectedIndex = 0; 
+        document.getElementById('nBloque').selectedIndex = 0; 
+        document.getElementById('plagas').innerHTML = '<option value="" disabled selected>Primero seleccione tipo de evaluación...</option>'; 
+        document.getElementById('nCama').value = ''; 
+        document.getElementById('cantidad').value = ''; 
+        document.getElementById('nMuestra').value = ''; 
+        document.getElementById('observaciones').value = ''; 
+    } 
+
+    document.getElementById('sanidadForm').addEventListener('submit', async function(e) { 
+        e.preventDefault(); 
+        const btnSave = document.getElementById('btn-save'); 
+        const loading = document.getElementById('loadingModal'); 
+
+        btnSave.disabled = true; 
+        loading.style.display = 'flex'; 
+
+        try { 
+            const rec = { 
+                id: generarId(), 
+                creadoEn: Date.now(), 
+                evaluador: document.getElementById('evaluador').value, 
+                semana: document.getElementById('semana').value, 
+                fecha: document.getElementById('fecha').value, 
+                variedad: document.getElementById('variedad').value, 
+                tipoEvaluacion: document.getElementById('tipoEvaluacion').value, 
+                nBloque: document.getElementById('nBloque').value, 
+                nCama: document.getElementById('nCama').value, 
+                plagas: document.getElementById('plagas').value, 
+                cantidad: document.getElementById('cantidad').value, 
+                nMuestra: document.getElementById('nMuestra').value, 
+                observaciones: document.getElementById('observaciones').value 
+            }; 
+
+            let guardadoLocal = false; 
+            try { await dbPut(rec); guardadoLocal = true; } catch (errDb) { console.error(errDb); } 
+
+            let enviado = false; 
+            if (navigator.onLine) enviado = await enviarAlServidor(rec); 
+
+            loading.style.display = 'none'; 
+
+            if (enviado) { 
+                if (guardadoLocal) { try { await dbDelete(rec.id); } catch (x) {} } 
+                mostrarExito('Guardado con éxito', '✅'); 
+                limpiarFormularioTrasGuardar(); 
+                sincronizarPendientes(); 
+            } else if (guardadoLocal) { 
+                mostrarExito('Sin conexión estable: guardado en el teléfono. Se enviará automáticamente.', '📴'); 
+                limpiarFormularioTrasGuardar(); 
+            } else { 
+                alert("No se pudo guardar. Revise su conexión e intente de nuevo."); 
+            } 
+        } catch (error) { 
+            console.error('Error:', error); 
+            loading.style.display = 'none'; 
+            alert("Hubo un error al guardar."); 
+        } finally { 
+            btnSave.disabled = false; 
+            loading.style.display = 'none'; 
+            actualizarBanner(); 
+        } 
+    }); 
+
+    function cerrarModalExito() { 
+        document.getElementById('successModal').style.display = 'none'; 
+    } 
+
+    cambiarVista('login'); 
+</script> 
+
+</body> 
 </html>
